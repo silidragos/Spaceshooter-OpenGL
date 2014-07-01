@@ -2,6 +2,8 @@
 
 
 Sprite::Sprite(float lowX, float highX, float lowY, float highY, char* filepath, vector<float> &mainVector, vector<GLuint>& elements){
+	int l = mainVector.size();
+
 	//Bottom Left
 	vertices.push_back(lowX);
 	vertices.push_back(lowY);
@@ -26,4 +28,16 @@ Sprite::Sprite(float lowX, float highX, float lowY, float highY, char* filepath,
 
 	for (int i = 0; i < vertices.size(); ++i)
 		mainVector.push_back(vertices[i]);
+	
+
+	//Complete Elements
+	elements.push_back(l);
+	elements.push_back(l + 1);
+	elements.push_back(l + 2);
+
+
+	elements.push_back(l + 2);
+	elements.push_back(l + 3);
+	elements.push_back(l);
+
 }
