@@ -101,31 +101,24 @@ int main() {
 
 	GLuint vbo;
 	glGenBuffers(1, &vbo);
-
-	float vertices[] = {
-		//Position	TexCoords
-		-0.5f, 0.5f,0.0f, 0.0f, 0.0f, // Top-left
-		0.5f, 0.5f, 0.0f, 1.0f, 0.0f, // Top-right
-		0.5f, -0.5f, 0.0f, 1.0f, 1.0f,// Bottom-right
-		-0.5f, -0.5f, 0.0f, 0.0f, 1.0f  // Bottom-left
-
-
-
-
-	};
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	vector<float> vertices;
 
 	GLuint ebo;
 	glGenBuffers(1, &ebo);
-	vector<GLuint> elements = {
-		0, 1, 2,
-		2, 3, 0
-	};
+	vector<GLuint> elements;
+
+	//Test
+	Sprite* spr1 = new Sprite(0.8f, 1.0f, 0.8f, 1.0f, "bug.png", vertices, elements);
+	Sprite* spr2 = new Sprite(0.0f, 0.2f, 0.0f, 0.2f, "bug.png", vertices, elements);
+
+	//EndTest
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), &vertices[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,elements.size()*sizeof(GLuint), &elements[0], GL_STATIC_DRAW);
+
 
 	GLuint shaderProgram = compileShaders("pixelShader.glsl", "vertexShader.glsl");
 

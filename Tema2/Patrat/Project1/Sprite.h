@@ -18,7 +18,7 @@ private:
 	int pozInVectPrinc;
 
 public:
-	Sprite(float BL, float BR, float TR, float TL, char* filepath,vector<float> &mainVector,vector<GLuint>& elements);
+	Sprite(float lowX, float highX, float lowY, float highY, char* filepath,vector<float> &mainVector,vector<GLuint>& elements);
 
 
 };
