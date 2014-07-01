@@ -1,6 +1,8 @@
-#include "stb_image.h"
+
 
 #include "Sprite.h"
+
+#define NMAX 200
 
 
 string LoadFileToString(const char* filepath){
@@ -62,8 +64,8 @@ void FlipTexture(unsigned char* image_data, int x, int y, int n)
 			bottom++;
 		}
 	}
-}
 
+}
 int main() {
 
 	glfwInit();
@@ -102,22 +104,27 @@ int main() {
 	GLuint vbo;
 	glGenBuffers(1, &vbo);
 	vector<float> vertices;
+	
 
-	GLuint ebo;
-	glGenBuffers(1, &ebo);
-	vector<GLuint> elements;
+	GLuint ebo[NMAX];
+	vector<vector<GLuint>> elements;
 
-	//Test
-	Sprite* spr1 = new Sprite(0.8f, 1.0f, 0.8f, 1.0f, "bug.png", vertices, elements);
-	Sprite* spr2 = new Sprite(0.0f, 0.2f, 0.0f, 0.2f, "bug.png", vertices, elements);
+	//Test -- Create new sprites
 
+	Sprite* spr1 = new Sprite(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
+	Sprite* spr2 = new Sprite(0.0f, 0.2f, 0.0f, 0.2f, vertices, elements);
 	//EndTest
 
+	
+	glGenBuffers(elements.size(), ebo);
+	
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), &vertices[0], GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,elements.size()*sizeof(GLuint), &elements[0], GL_STATIC_DRAW);
+	for (int i = 0; i < elements.size(); ++i){
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements[i].size()*sizeof(GLuint), &elements[i][0], GL_STATIC_DRAW);
+	}
 
 
 	GLuint shaderProgram = compileShaders("pixelShader.glsl", "vertexShader.glsl");
@@ -130,23 +137,12 @@ int main() {
 	glEnableVertexAttribArray(texAttrib);
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
-	GLuint textures;
-	glGenTextures(1, &textures);
+	GLuint textures[NMAX];
+	glGenTextures(elements.size(), &textures[0]);
 
-	int x, y,n;
-
-	//glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textures);
-	int force_channels = 4;
-	unsigned char* image = stbi_load("bug.png", &x, &y, &n, force_channels);
-
-	FlipTexture(image, x, y, n);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//Add textures
+	spr1->addTexture("bug.png",textures[0]);
+	spr2->addTexture("fighter.png", textures[1]);
 
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
@@ -157,7 +153,12 @@ int main() {
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawElements(GL_TRIANGLES, elements.size(), GL_UNSIGNED_INT, 0);
+		for (int i = 0; i < elements.size(); ++i){
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
+			glBindTexture(GL_TEXTURE_2D, textures[i]);
+			glDrawElements(GL_TRIANGLES, elements[i].size(), GL_UNSIGNED_INT, 0);
+
+		}
 	}
 
 	glDeleteProgram(shaderProgram);

@@ -1,7 +1,29 @@
 #include"Sprite.h"
 
+void Sprite::FlipTexture(unsigned char* image_data, int x, int y, int n)
+{
+	//flip texture
+	int width_in_bytes = x * 4;
+	unsigned char *top = NULL;
+	unsigned char *bottom = NULL;
+	unsigned char temp = 0;
+	int half_height = y / 2;
 
-Sprite::Sprite(float lowX, float highX, float lowY, float highY, char* filepath, vector<float> &mainVector, vector<GLuint>& elements){
+	for (int row = 0; row < half_height; row++) {
+		top = image_data + row * width_in_bytes;
+		bottom = image_data + (y - row - 1) * width_in_bytes;
+		for (int col = 0; col < width_in_bytes; col++) {
+			temp = *top;
+			*top = *bottom;
+			*bottom = temp;
+			top++;
+			bottom++;
+		}
+	}
+}
+
+
+Sprite::Sprite(float lowX, float highX, float lowY, float highY, vector<float> &mainVector, vector<vector<GLuint>>& elements){
 	int l = mainVector.size()/5;
 
 	//Top Left
@@ -28,23 +50,37 @@ Sprite::Sprite(float lowX, float highX, float lowY, float highY, char* filepath,
 	vertices.push_back(0.0f);
 	vertices.push_back(0.0f);
 	vertices.push_back(0.0f);
-	
-
-	
-
 
 	for (int i = 0; i < vertices.size(); ++i)
 		mainVector.push_back(vertices[i]);
 	
-
+	vector<GLuint> aux;
 	//Complete Elements
-	elements.push_back(l);
-	elements.push_back(l + 1);
-	elements.push_back(l + 2);
+	aux.push_back(l);
+	aux.push_back(l + 1);
+	aux.push_back(l + 2);
 
+	aux.push_back(l + 2);
+	aux.push_back(l + 3);
+	aux.push_back(l);
 
-	elements.push_back(l + 2);
-	elements.push_back(l + 3);
-	elements.push_back(l);
+	elements.push_back(aux);
+}
+void Sprite::addTexture(char* filepath,GLuint texture){
 
+	//glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	
+	int x, y, n;
+
+	int force_channels = 4;
+	unsigned char* image = stbi_load(filepath, &x, &y, &n, force_channels);
+
+	FlipTexture(image, x, y, n);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
