@@ -13,3 +13,19 @@ void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], 
 	}
 
 }
+
+void SpriteManager::removeSprite(Sprite* spr, vector<float> &mainVector, vector<vector<GLuint>>& elements){
+	int pozSpr = spr->getPozInEL();
+	for (int i = 0; i < sprites.size(); ++i){
+		if (sprites[i] == spr){
+			sprites.erase(sprites.begin() + i);
+			spr->freeMemory(mainVector, elements);
+			for (int i = 0; i < sprites.size(); ++i){
+				if (sprites[i]->getPozInEL()>pozSpr){
+					sprites[i]->correctValues(mainVector, elements);
+				}
+			}
+			break;
+		}
+	}
+}

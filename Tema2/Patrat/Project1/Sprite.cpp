@@ -51,6 +51,9 @@ Sprite::Sprite(float lowX, float highX, float lowY, float highY, vector<float> &
 	vertices.push_back(0.0f);
 	vertices.push_back(0.0f);
 
+	pozInVectPrinc = mainVector.size();
+	pozInEl = elements.size();
+
 	for (int i = 0; i < vertices.size(); ++i)
 		mainVector.push_back(vertices[i]);
 	
@@ -65,6 +68,8 @@ Sprite::Sprite(float lowX, float highX, float lowY, float highY, vector<float> &
 	aux.push_back(l);
 
 	elements.push_back(aux);
+
+
 }
 void Sprite::addTexture(char* filepath,GLuint texture){
 
@@ -83,4 +88,19 @@ void Sprite::addTexture(char* filepath,GLuint texture){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+}
+void Sprite::freeMemory(vector<float> &mainVector, vector<vector<GLuint>>& elements){
+	elements.erase(elements.begin() + pozInEl);
+	mainVector.erase(mainVector.begin() + pozInVectPrinc, mainVector.begin() + pozInVectPrinc + 20);
+	delete this;
+}
+int Sprite::getPozInEL(){
+	return pozInEl;
+}
+void Sprite::correctValues(vector<float> &mainVector, vector<vector<GLuint>>& elements){
+	pozInEl -= 1;
+	for (int i = 0; i < elements[pozInEl].size(); ++i){
+		elements[pozInEl][i] -= 4;
+	}
+	pozInVectPrinc -= 20;
 }

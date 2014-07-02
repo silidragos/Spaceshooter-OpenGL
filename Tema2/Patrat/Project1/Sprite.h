@@ -17,12 +17,17 @@ class Sprite{
 private:
 	vector<float> vertices;
 	int pozInVectPrinc;
+	int pozInEl = 0;
+
 
 	void FlipTexture(unsigned char* image_data, int x, int y, int n);
 public:
 	Sprite(float lowX, float highX, float lowY, float highY, vector<float> &mainVector,vector<vector<GLuint>>& elements);
 	void addTexture(char* filepath, GLuint textures);
-
+	void freeMemory(vector<float> &mainVector, vector<vector<GLuint>>& elements);
+	
+	int getPozInEL();
+	void correctValues(vector<float> &mainVector, vector<vector<GLuint>>& elements);		//corrects pozInEL and pozInVectPrinc after another Sprite was deleted
 };
 
 #endif

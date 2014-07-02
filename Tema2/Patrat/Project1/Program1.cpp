@@ -117,6 +117,8 @@ int main() {
 	spriteMan->addSprite(spr2);
 	spriteMan->addSprite(spr3);
 	
+	spriteMan->removeSprite(spr2, vertices, elements);
+	
 	//EndTest
 
 	glGenBuffers(elements.size(), ebo);
@@ -145,9 +147,8 @@ int main() {
 
 	//Add textures
 	spr1->addTexture("bug.png",textures[0]);
-	spr2->addTexture("fighter.png", textures[1]);
-	spr3->addTexture("bug.png", textures[2]);
-
+	spr3->addTexture("fighter.png", textures[1]);
+	
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
 	while (!glfwWindowShouldClose(window)){
@@ -163,6 +164,7 @@ int main() {
 
 	glDeleteProgram(shaderProgram);
 	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(elements.size(), ebo);
 	glDeleteVertexArrays(1, &vao);
 
 }

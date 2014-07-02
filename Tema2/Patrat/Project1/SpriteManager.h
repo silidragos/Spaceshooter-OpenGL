@@ -12,7 +12,7 @@ private:
 
 public:
 	void addSprite(Sprite*);
-	void removeSprite();
+	void removeSprite(Sprite*, vector<float> &mainVector, vector<vector<GLuint>>& elements);
 	Sprite* getSprite();
 
 	void drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint textures[NMAX]);
