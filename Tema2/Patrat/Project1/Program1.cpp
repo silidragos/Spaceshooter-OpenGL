@@ -1,8 +1,5 @@
+#include "SpriteManager.h"
 
-
-#include "Sprite.h"
-
-#define NMAX 200
 
 
 string LoadFileToString(const char* filepath){
@@ -110,12 +107,18 @@ int main() {
 	vector<vector<GLuint>> elements;
 
 	//Test -- Create new sprites
+	SpriteManager* spriteMan = new SpriteManager();
 
 	Sprite* spr1 = new Sprite(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
 	Sprite* spr2 = new Sprite(0.0f, 0.2f, 0.0f, 0.2f, vertices, elements);
+	Sprite* spr3 = new Sprite(-1.0f, -0.8f, -1.0f, -0.8f, vertices, elements);
+	
+	spriteMan->addSprite(spr1);
+	spriteMan->addSprite(spr2);
+	spriteMan->addSprite(spr3);
+	
 	//EndTest
 
-	
 	glGenBuffers(elements.size(), ebo);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -143,6 +146,7 @@ int main() {
 	//Add textures
 	spr1->addTexture("bug.png",textures[0]);
 	spr2->addTexture("fighter.png", textures[1]);
+	spr3->addTexture("bug.png", textures[2]);
 
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
@@ -153,12 +157,8 @@ int main() {
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		for (int i = 0; i < elements.size(); ++i){
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
-			glBindTexture(GL_TEXTURE_2D, textures[i]);
-			glDrawElements(GL_TRIANGLES, elements[i].size(), GL_UNSIGNED_INT, 0);
-
-		}
+		spriteMan->drawAll(elements, ebo, textures);
+		
 	}
 
 	glDeleteProgram(shaderProgram);
