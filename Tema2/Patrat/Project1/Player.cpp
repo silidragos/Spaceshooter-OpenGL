@@ -13,6 +13,7 @@ bool Player::Movement(GLFWwindow* window, vector<float>& vertices){
 			x = getPozInVectPrinc() + 5 * i;
 			vertices[x] += -speed;
 		}
+
 		ok=true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT)){

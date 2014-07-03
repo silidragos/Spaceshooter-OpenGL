@@ -1,5 +1,8 @@
 #include "SpriteManager.h"
 #include "Player.h"
+#include "Enemy.h"
+
+#include<time.h>
 
 string LoadFileToString(const char* filepath){
 	string fileData;
@@ -86,12 +89,17 @@ int main() {
 	glewExperimental = GL_TRUE;
 	glewInit();
 
+
 	//Initialize GLEW
 	if (glewInit() != GLEW_OK){
 		fprintf(stderr, "Glew is gone, man!\n");
 		glfwTerminate();
 		return -1;
 	}
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+	glEnable(GL_BLEND);  
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
@@ -109,9 +117,9 @@ int main() {
 	SpriteManager* spriteMan = new SpriteManager();
 
 	//Sprite* spr1 = new Sprite(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
-	Sprite* spr2 = new Sprite(0.0f, 0.2f, 0.0f, 0.2f, vertices, elements);
-	Sprite* spr3 = new Sprite(-1.0f, -0.8f, -1.0f, -0.8f, vertices, elements);
-	
+	Enemy* spr2 = new Enemy(-0.8f, -0.6f, 0.0f, 0.2f, vertices, elements,Enemy::LINIAR);
+	Enemy* spr3 = new Enemy(-0.8f, -0.6f, -1.0f, -0.8f, vertices, elements, Enemy::SINUSOIDAL);
+
 	//spriteMan->addSprite(spr1);
 	spriteMan->addSprite(spr2);
 	spriteMan->addSprite(spr3);
@@ -130,6 +138,7 @@ int main() {
 	}
 
 
+
 	GLuint shaderProgram = compileShaders("pixelShader.glsl", "vertexShader.glsl");
 
 	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
@@ -139,7 +148,7 @@ int main() {
 	GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
 	glEnableVertexAttribArray(texAttrib);
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-
+	
 
 	
 
@@ -154,27 +163,34 @@ int main() {
 
 	//Add textures
 	//spr1->addTexture("fighter.png",textures[0]);
-	spr2->addTexture("fighter.png", textures[0]);
+	spr2->addTexture("bug.png", textures[0]);
 	spr3->addTexture("bug.png", textures[1]);
-	player->addTexture("bug.png", textures[2]);
+	player->addTexture("fighter.png", textures[2]);
 
 	//Elimina Sprite
 	//spriteMan->removeSprite(spr2, vertices, elements,textures);
 	//spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
-	
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
 	while (!glfwWindowShouldClose(window)){
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
+
+
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		if(player->Movement(window,vertices))
+		GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
+
+		spr2->Movement(window, vertices,time);
+		spr3->Movement(window, vertices,time);
+
+		player->Movement(window, vertices);
+
 		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 		
 		spriteMan->drawAll(elements, ebo, textures);
+	
 		
 	}
 
