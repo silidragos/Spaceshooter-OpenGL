@@ -1,6 +1,5 @@
 #include "SpriteManager.h"
-
-
+#include "Player.h"
 
 string LoadFileToString(const char* filepath){
 	string fileData;
@@ -109,16 +108,15 @@ int main() {
 	//Test -- Create new sprites
 	SpriteManager* spriteMan = new SpriteManager();
 
-	Sprite* spr1 = new Sprite(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
+	//Sprite* spr1 = new Sprite(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
 	Sprite* spr2 = new Sprite(0.0f, 0.2f, 0.0f, 0.2f, vertices, elements);
 	Sprite* spr3 = new Sprite(-1.0f, -0.8f, -1.0f, -0.8f, vertices, elements);
 	
-	spriteMan->addSprite(spr1);
+	//spriteMan->addSprite(spr1);
 	spriteMan->addSprite(spr2);
 	spriteMan->addSprite(spr3);
 	
-	spriteMan->removeSprite(spr2, vertices, elements);
-	
+
 	//EndTest
 
 	glGenBuffers(elements.size(), ebo);
@@ -142,12 +140,27 @@ int main() {
 	glEnableVertexAttribArray(texAttrib);
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
+
+	
+
 	GLuint textures[NMAX];
 	glGenTextures(elements.size(), &textures[0]);
+	
+
+	Player* player = new Player(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
+	spriteMan->addSprite(player);
+	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+
 
 	//Add textures
-	spr1->addTexture("bug.png",textures[0]);
-	spr3->addTexture("fighter.png", textures[1]);
+	//spr1->addTexture("fighter.png",textures[0]);
+	spr2->addTexture("fighter.png", textures[0]);
+	spr3->addTexture("bug.png", textures[1]);
+	player->addTexture("bug.png", textures[2]);
+
+	//Elimina Sprite
+	//spriteMan->removeSprite(spr2, vertices, elements,textures);
+	//spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 	
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
@@ -158,6 +171,9 @@ int main() {
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		if(player->Movement(window,vertices))
+		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+		
 		spriteMan->drawAll(elements, ebo, textures);
 		
 	}

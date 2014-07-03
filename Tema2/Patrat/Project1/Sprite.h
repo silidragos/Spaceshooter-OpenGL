@@ -27,6 +27,7 @@ public:
 	void freeMemory(vector<float> &mainVector, vector<vector<GLuint>>& elements);
 	
 	int getPozInEL();
+	int getPozInVectPrinc();
 	void correctValues(vector<float> &mainVector, vector<vector<GLuint>>& elements);		//corrects pozInEL and pozInVectPrinc after another Sprite was deleted
 };
 

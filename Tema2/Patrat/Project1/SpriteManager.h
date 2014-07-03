@@ -9,10 +9,13 @@ class SpriteManager{
 private:
 	vector<Sprite*> sprites;
 
-
+	string LoadFileToString(const char* filepath);
+	GLuint compileShaders(char* pixelShaders, char* vertexShaders);
 public:
 	void addSprite(Sprite*);
-	void removeSprite(Sprite*, vector<float> &mainVector, vector<vector<GLuint>>& elements);
+	void addSprite(float lowX, float highX, float lowY, float highY, vector<float> &mainVector, vector<vector<GLuint>>& elements);
+	void removeSprite(Sprite*, vector<float> &mainVector, vector<vector<GLuint>>& elements,GLuint textures[NMAX]);
+	void reGenBuffers(GLuint vbo, GLuint ebo[NMAX], vector<vector<GLuint>>& elements, vector<float>& vertices, GLuint& shaderProgram);
 	Sprite* getSprite();
 
 	void drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint textures[NMAX]);

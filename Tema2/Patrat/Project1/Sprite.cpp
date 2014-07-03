@@ -97,6 +97,9 @@ void Sprite::freeMemory(vector<float> &mainVector, vector<vector<GLuint>>& eleme
 int Sprite::getPozInEL(){
 	return pozInEl;
 }
+int Sprite::getPozInVectPrinc(){
+	return pozInVectPrinc;
+}
 void Sprite::correctValues(vector<float> &mainVector, vector<vector<GLuint>>& elements){
 	pozInEl -= 1;
 	for (int i = 0; i < elements[pozInEl].size(); ++i){
