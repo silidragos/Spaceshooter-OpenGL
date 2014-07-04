@@ -49,11 +49,12 @@ void SpriteManager::addSprite(float lowX, float highX, float lowY, float highY, 
 void SpriteManager::addSprite(Sprite* spr){
 	sprites.push_back(spr);
 }
-void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint textures[NMAX]){
+void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint textures[NMAX],GLuint& shaderProgram){
 
 	for (int i = 0; i < elements.size(); ++i){
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
 		glBindTexture(GL_TEXTURE_2D, textures[i]);
+		glUniform1i(glGetUniformLocation(shaderProgram, "basic_texture"), i);
 		glDrawElements(GL_TRIANGLES, elements[i].size(), GL_UNSIGNED_INT, 0);
 	}
 

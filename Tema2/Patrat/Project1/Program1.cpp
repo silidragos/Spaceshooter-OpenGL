@@ -92,7 +92,7 @@ int main() {
 
 	//Initialize GLEW
 	if (glewInit() != GLEW_OK){
-		fprintf(stderr, "Glew is gone, man!\n");
+		fprintf(stderr, "Glew is gone!\n");
 		glfwTerminate();
 		return -1;
 	}
@@ -150,10 +150,8 @@ int main() {
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	
 
-	
-
 	GLuint textures[NMAX];
-	glGenTextures(elements.size(), &textures[0]);
+	
 	
 
 	Player* player = new Player(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
@@ -162,14 +160,17 @@ int main() {
 
 
 	//Add textures
-	//spr1->addTexture("fighter.png",textures[0]);
-	spr2->addTexture("bug.png", textures[0]);
-	spr3->addTexture("bug.png", textures[1]);
-	player->addTexture("fighter.png", textures[2]);
+	//Texturile trebuie afisate in ordinea in care sunt elements!!!
+	spr2->addTexture("bug.png", textures[0],0);
+	spr3->addTexture("bug.png", textures[2],2);
+	player->addTexture("fighter.png", textures[1], 1);
 
 	//Elimina Sprite
 	//spriteMan->removeSprite(spr2, vertices, elements,textures);
 	//spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+	bool flag1 = true;
+	bool flag2 = true;
+	Player* pl2;
 
 	while (!glfwWindowShouldClose(window)){
 
@@ -182,6 +183,23 @@ int main() {
 
 		GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
 
+		//Test - create new Instance
+		if (time >= 3.0f && flag1){
+			flag1 = false;
+			pl2 = new Player(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
+			pl2->addTexture("fighter.png",textures[3],3);
+			spriteMan->addSprite(pl2);
+			cout<<pl2->getPozInVectPrinc();
+		}
+
+		//ERROR ON TEXTURES!
+		if (time >= 5.0f && flag2){
+			cout << "bum";
+			flag2 = false;
+			spriteMan->removeSprite(spr2,vertices,elements,textures);
+			cout << pl2->getPozInVectPrinc();
+		}
+		
 		spr2->Movement(window, vertices,time);
 		spr3->Movement(window, vertices,time);
 
@@ -189,7 +207,7 @@ int main() {
 
 		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 		
-		spriteMan->drawAll(elements, ebo, textures);
+		spriteMan->drawAll(elements, ebo, textures,shaderProgram);
 	
 		
 	}

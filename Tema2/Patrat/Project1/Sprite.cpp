@@ -71,9 +71,10 @@ Sprite::Sprite(float lowX, float highX, float lowY, float highY, vector<float> &
 
 
 }
-void Sprite::addTexture(char* filepath,GLuint texture){
+void Sprite::addTexture(char* filepath,GLuint texture,int i){
+	glGenTextures(1, &texture);
 
-	//glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0+i);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	
 	int x, y, n;
@@ -82,7 +83,7 @@ void Sprite::addTexture(char* filepath,GLuint texture){
 	unsigned char* image = stbi_load(filepath, &x, &y, &n, force_channels);
 
 	FlipTexture(image, x, y, n);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

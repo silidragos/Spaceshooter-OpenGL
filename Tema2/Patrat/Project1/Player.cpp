@@ -7,7 +7,7 @@ bool Player::Movement(GLFWwindow* window, vector<float>& vertices){
 	speed = 0.5f/200.0f;
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT)){
-		cout << "Stanga\n";
+		//cout << "Stanga\n";
 	
 		for (int i = 0; i < 4; ++i){
 			x = getPozInVectPrinc() + 5 * i;
@@ -17,7 +17,7 @@ bool Player::Movement(GLFWwindow* window, vector<float>& vertices){
 		ok=true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT)){
-		cout << "Dreapta\n";
+		//cout << "Dreapta\n";
 
 		for (int i = 0; i < 4; ++i){
 			x = getPozInVectPrinc() + 5 * i;
@@ -26,7 +26,7 @@ bool Player::Movement(GLFWwindow* window, vector<float>& vertices){
 		ok=true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_UP)){
-		cout << "Sus\n";
+	//	cout << "Sus\n";
 
 		for (int i = 0; i < 4; ++i){
 			y = getPozInVectPrinc() + 5 * i+1;
@@ -35,7 +35,7 @@ bool Player::Movement(GLFWwindow* window, vector<float>& vertices){
 		ok = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_DOWN)){
-		cout << "Jos\n";
+		//cout << "Jos\n";
 
 		for (int i = 0; i < 4; ++i){
 			y = getPozInVectPrinc() + 5 * i + 1;
