@@ -101,10 +101,11 @@ int Sprite::getPozInEL(){
 int Sprite::getPozInVectPrinc(){
 	return pozInVectPrinc;
 }
-void Sprite::correctValues(vector<float> &mainVector, vector<vector<GLuint>>& elements){
+void Sprite::correctValues(vector<float> &mainVector, vector<vector<GLuint>>& elements,GLuint textures[NMAX]){
 	pozInEl -= 1;
 	for (int i = 0; i < elements[pozInEl].size(); ++i){
 		elements[pozInEl][i] -= 4;
+		//textures[pozInEl] = textures[pozInEl+1];
 	}
 	pozInVectPrinc -= 20;
 }

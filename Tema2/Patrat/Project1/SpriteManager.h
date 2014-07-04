@@ -3,8 +3,6 @@
 
 #include "Sprite.h"
 
-#define NMAX 200
-
 class SpriteManager{
 private:
 	vector<Sprite*> sprites;

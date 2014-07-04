@@ -5,7 +5,9 @@ in vec3 position;
 
 out vec2 Texcoord;
 
+uniform mat4 trans;
+
 void main(){
 Texcoord = texcoord;
-gl_Position = vec4(position,1.0f);
+gl_Position = trans*vec4(position,1.0f);
 }

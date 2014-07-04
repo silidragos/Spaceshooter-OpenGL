@@ -172,6 +172,9 @@ int main() {
 	bool flag2 = true;
 	Player* pl2;
 
+	glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	GLint uniTrans = glGetUniformLocation(shaderProgram, "trans");
+	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 	while (!glfwWindowShouldClose(window)){
 
 		glfwSwapBuffers(window);
@@ -182,30 +185,36 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
-
+		
 		//Test - create new Instance
 		if (time >= 3.0f && flag1){
 			flag1 = false;
 			pl2 = new Player(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
 			pl2->addTexture("fighter.png",textures[3],3);
 			spriteMan->addSprite(pl2);
-			cout<<pl2->getPozInVectPrinc();
+			
+			//Those 2 together
+			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		}
-
+		
 		//ERROR ON TEXTURES!
 		if (time >= 5.0f && flag2){
 			cout << "bum";
 			flag2 = false;
 			spriteMan->removeSprite(spr2,vertices,elements,textures);
-			cout << pl2->getPozInVectPrinc();
+
+			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		}
 		
-		spr2->Movement(window, vertices,time);
-		spr3->Movement(window, vertices,time);
+		player->Movement(window, vertices, uniTrans);
 
-		player->Movement(window, vertices);
+		//spr2->Movement(window, vertices,time);
+		//spr3->Movement(window, vertices,time);
 
-		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+		
+//		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 		
 		spriteMan->drawAll(elements, ebo, textures,shaderProgram);
 	

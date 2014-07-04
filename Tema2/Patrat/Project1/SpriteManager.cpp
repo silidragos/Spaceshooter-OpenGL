@@ -68,7 +68,7 @@ void SpriteManager::removeSprite(Sprite* spr, vector<float> &mainVector, vector<
 			spr->freeMemory(mainVector, elements);
 			for (int i = 0; i < sprites.size(); ++i){
 				if (sprites[i]->getPozInEL()>pozSpr){
-					sprites[i]->correctValues(mainVector, elements);
+					sprites[i]->correctValues(mainVector, elements, textures);
 				}
 			}
 			break;

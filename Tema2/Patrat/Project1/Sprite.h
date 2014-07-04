@@ -2,6 +2,8 @@
 #ifndef SPRITE_H__
 #define SPRITE_H__
 
+#define NMAX 200
+
 #include <GL/glew.h> // include GLEW and new version of GL on Windows
 #include <GLFW/glfw3.h> // GLFW helper library
 #include "stb_image.h"
@@ -31,7 +33,7 @@ public:
 	
 	int getPozInEL();
 	int getPozInVectPrinc();
-	void correctValues(vector<float> &mainVector, vector<vector<GLuint>>& elements);		//corrects pozInEL and pozInVectPrinc after another Sprite was deleted
+	void correctValues(vector<float> &mainVector, vector<vector<GLuint>>& elements, GLuint textures[NMAX]);		//corrects pozInEL and pozInVectPrinc after another Sprite was deleted
 };
 
 #endif
