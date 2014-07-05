@@ -40,12 +40,6 @@ string SpriteManager::LoadFileToString(const char* filepath){
 
 	return fileData;
 }
-
-/*void SpriteManager::addSprite(float lowX, float highX, float lowY, float highY, vector<float> &mainVector, vector<vector<GLuint>>& elements){
-	Sprite* spr = new Sprite(lowX,highX,lowY,highY,mainVector,elements);
-	sprites.push_back(spr);
-}*/
-
 void SpriteManager::addSprite(Sprite* spr){
 	sprites.push_back(spr);
 }
@@ -69,7 +63,7 @@ void SpriteManager::removeSprite(Sprite* spr, vector<float> &mainVector, vector<
 			spr->freeMemory(mainVector, elements);
 			for (int i = 0; i < sprites.size(); ++i){
 				if (sprites[i]->getPozInEL()>pozSpr){
-					sprites[i]->correctValues(mainVector, elements, textures);
+					//sprites[i]->correctValues(mainVector, elements, textures);
 				}
 			}
 			break;

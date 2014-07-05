@@ -43,28 +43,6 @@ GLuint compileShaders(char* pixelShaders, char* vertexShaders){
 	return shaderProgram;
 
 }
-void FlipTexture(unsigned char* image_data, int x, int y, int n)
-{
-	//flip texture
-	int width_in_bytes = x * 4;
-	unsigned char *top = NULL;
-	unsigned char *bottom = NULL;
-	unsigned char temp = 0;
-	int half_height = y / 2;
-
-	for (int row = 0; row < half_height; row++) {
-		top = image_data + row * width_in_bytes;
-		bottom = image_data + (y - row - 1) * width_in_bytes;
-		for (int col = 0; col < width_in_bytes; col++) {
-			temp = *top;
-			*top = *bottom;
-			*bottom = temp;
-			top++;
-			bottom++;
-		}
-	}
-
-}
 int main() {
 
 	glfwInit();
@@ -97,9 +75,11 @@ int main() {
 		return -1;
 	}
 
+	//Enable alpha channel
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 	glEnable(GL_BLEND);  
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
@@ -115,15 +95,21 @@ int main() {
 
 	//Test -- Create new sprites
 	SpriteManager* spriteMan = new SpriteManager();
+	Enemy* spr2;
 
-	//Sprite* spr1 = new Sprite(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
-	Enemy* spr2 = new Enemy(-0.8f, -0.6f, 0.0f, 0.2f, vertices, elements,Enemy::LINIAR);
-	Enemy* spr3 = new Enemy(-0.8f, -0.6f, -1.0f, -0.8f, vertices, elements, Enemy::SINUSOIDAL);
+	srand(time(NULL));
 
-	//spriteMan->addSprite(spr1);
-	spriteMan->addSprite(spr2);
-	spriteMan->addSprite(spr3);
-	
+	//Creates Enemy ships
+	for (int i = 0; i < 5; ++i)
+	{
+		spr2 = new Enemy(-1.0f, -0.8f, i*0.2f, (i + 1)*0.2f, vertices, elements, rand()%2);
+		spriteMan->addSprite(spr2);
+	}
+
+	//Add player
+	Player* player = new Player(-0.1f, 0.1f, -1.0f, -0.8f, vertices, elements);
+	spriteMan->addSprite(player);
+
 
 	//EndTest
 
@@ -149,23 +135,16 @@ int main() {
 	glEnableVertexAttribArray(texAttrib);
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	
-
 	GLuint textures[NMAX];
 
-	Player* player = new Player(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
-	spriteMan->addSprite(player);
-	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
-
-
 	//Add textures
-	//Texturile trebuie afisate in ordinea in care sunt elements!!!
-	spr2->addTexture("bug.png", textures[0],0);
-	spr3->addTexture("bug.png", textures[1],1);
-	player->addTexture("fighter.png", textures[2], 2);
+	
+	//Texturile trebuie afisate in ordinea in care sunt in elements!!!
+	for (int i = 0; i < 5;++i)
+	spr2->addTexture("bug.png", textures[i],i);
 
-	//Elimina Sprite
-	//spriteMan->removeSprite(spr2, vertices, elements,textures);
-	//spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+	player->addTexture("fighter.png", textures[5], 5);
+
 	bool flag1 = true;
 	bool flag2 = true;
 	Player* pl2;
@@ -174,7 +153,8 @@ int main() {
 	GLint uniTrans = glGetUniformLocation(shaderProgram, "trans");
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 
-	/*glm::mat4 proj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f,-1.0f,1.0f);
+	//Camera Transformations
+	glm::mat4 proj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f,-1.0f,1.0f);
 	GLint uniProj = glGetUniformLocation(shaderProgram, "orto");
 	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
 	
@@ -185,10 +165,10 @@ int main() {
 	glm::mat4 view = glm::lookAt(pos, target, up);
 	GLint uniView = glGetUniformLocation(shaderProgram, "view");
 	glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
-	*/
+	
 	Projectile* blast;
 	GLfloat lastShoot = 0.0f;
-	int k = 3;
+	int k = 6;
 
 	while (!glfwWindowShouldClose(window)){
 
@@ -199,31 +179,18 @@ int main() {
 
 		GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
 
-		if (glfwGetKey(window, GLFW_KEY_SPACE) && time-lastShoot>1.0f){
-			cout << "1";
+		//Create Projectile
+		if (glfwGetKey(window, GLFW_KEY_SPACE) && time-lastShoot>0.5f){
 			lastShoot = time;
 			blast = new Projectile(player->getPozX(), player->getPozY(),vertices, elements);
 			blast->addTexture("blast.png", textures[k], k);
 			k++;
 			spriteMan->addSprite(blast);
 			flag1 = false;
-
 			
 			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		}
-		
-		//Test - create new Instance
-		/*if (time >= 3.0f && flag1){
-			flag1 = false;
-			pl2 = new Player(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
-			pl2->addTexture("fighter.png",textures[3],3);
-			spriteMan->addSprite(pl2);
-			
-			//Those 2 together
-			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
-			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
-		}*/
 		
 		/*//ERROR ON TEXTURES!
 		if (time >= 5.0f && flag2){
@@ -235,14 +202,7 @@ int main() {
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		}
 		*/
-
-		//player->movement(window, vertices, uniTrans);
-		//spr2->movement(window, vertices,uniTrans);
-		//spr3->movement(window, vertices,uniTrans);
-
-		
-//		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
-		
+	
 		spriteMan->drawAll(elements, ebo, textures,shaderProgram,window,vertices,uniTrans);
 	
 		

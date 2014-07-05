@@ -18,9 +18,6 @@ public:
 		speed = 0.5f / 400.0f;
 	}
 	bool movement(GLFWwindow* window, vector<float> &vertices, GLint uniTrans);
-
-
-
 };
 
 #endif

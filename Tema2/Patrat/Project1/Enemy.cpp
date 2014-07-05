@@ -1,10 +1,14 @@
 #include "Enemy.h"
 
-Enemy::Enemy(float lowX, float highX, float lowY, float highY, vector<float> &mainVector, vector<vector<GLuint>>& elements, Type t) :Sprite(lowX, highX, lowY, highY, mainVector, elements){
-	enemyType = t;
+Enemy::Enemy(float lowX, float highX, float lowY, float highY, vector<float> &mainVector, vector<vector<GLuint>>& elements, int t) :Sprite(lowX, highX, lowY, highY, mainVector, elements){
+	switch (t){
+	case (0): enemyType = LINIAR;
+		break;
+	case (1):enemyType = SINUSOIDAL;
+		break;
+	}
 	trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 }
-
 bool Enemy::movement(GLFWwindow* window, vector<float>& vertices, GLint uniTrans){
 	int x;
 	int y;
