@@ -18,7 +18,7 @@ public:
 		transXM = glm::translate(glm::mat4(1.0f), glm::vec3(-speed, 0.0f, 0.0f));
 		transYM = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -speed, 0.0f));
 	}
-	bool Movement(GLFWwindow* window, vector<float> &vertices,GLint uniTrans);
+	bool movement(GLFWwindow* window, vector<float> &vertices,GLint uniTrans);
 
 
 

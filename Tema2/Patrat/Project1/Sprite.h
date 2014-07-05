@@ -16,6 +16,8 @@
 #include<string>
 #include<vector>
 
+#include<time.h>
+
 using namespace std;
 
 class Sprite{
@@ -34,6 +36,8 @@ public:
 	int getPozInEL();
 	int getPozInVectPrinc();
 	void correctValues(vector<float> &mainVector, vector<vector<GLuint>>& elements, GLuint textures[NMAX]);		//corrects pozInEL and pozInVectPrinc after another Sprite was deleted
+
+	virtual bool movement(GLFWwindow* window, vector<float> &vertices, GLint uniTrans)=0;
 };
 
 #endif

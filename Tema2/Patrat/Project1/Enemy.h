@@ -10,12 +10,12 @@ public:
 private:
 	float speed = 0.5f;
 	Type enemyType;
+
+	glm::mat4 trans;
 public:
 	
-	
-
 	Enemy(float lowX, float highX, float lowY, float highY, vector<float> &mainVector, vector<vector<GLuint>>& elements, Type t);
-	bool Movement(GLFWwindow* window, vector<float> &vertices, float time);
+	bool movement(GLFWwindow* window, vector<float> &vertices, GLint uniTrans);
 
 
 

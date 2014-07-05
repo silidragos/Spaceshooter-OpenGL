@@ -2,38 +2,30 @@
 
 Enemy::Enemy(float lowX, float highX, float lowY, float highY, vector<float> &mainVector, vector<vector<GLuint>>& elements, Type t) :Sprite(lowX, highX, lowY, highY, mainVector, elements){
 	enemyType = t;
+	trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
-bool Enemy::Movement(GLFWwindow* window, vector<float>& vertices, float time){
+bool Enemy::movement(GLFWwindow* window, vector<float>& vertices, GLint uniTrans){
 	int x;
 	int y;
 	bool ok = true;
 	speed = 0.5f / 200.0f;
-
+	GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
+	
 	switch (enemyType){
 	case(LINIAR) : {
-					   for (int i = 0; i < 4; ++i){
-						   x = getPozInVectPrinc() + 5 * i;
-						   vertices[x] += 2*sin(time)/1000;
-					   }
+					   glm::mat4 transPart = glm::translate(glm::mat4(1.0f), glm::vec3(sin(time)/2000.0f, 0.0f, 0.0f));
+					   glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+					   trans = transPart*trans;
 	}
 		break;
 	case(SINUSOIDAL) : {
-						   for (int i = 0; i < 4; ++i){
-							   x = getPozInVectPrinc() + 5 * i;
-							   vertices[x] += 2 * sin(time) / 1000;
-
-							   y = getPozInVectPrinc() + 5 * i + 1;
-							   vertices[y] += sin(time*7) / 1000;
-
-						   }
+						   glm::mat4 transPart = glm::translate(glm::mat4(1.0f), glm::vec3(2 * sin(time) / 1000.0f, 2 * sin(time*10) / 1000.0f, 0.0f));
+						   glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+						   trans = trans * transPart;
 	}
 		break;
-
-
-
 	}
-
 
 	return ok;
 }

@@ -41,17 +41,18 @@ string SpriteManager::LoadFileToString(const char* filepath){
 	return fileData;
 }
 
-void SpriteManager::addSprite(float lowX, float highX, float lowY, float highY, vector<float> &mainVector, vector<vector<GLuint>>& elements){
+/*void SpriteManager::addSprite(float lowX, float highX, float lowY, float highY, vector<float> &mainVector, vector<vector<GLuint>>& elements){
 	Sprite* spr = new Sprite(lowX,highX,lowY,highY,mainVector,elements);
 	sprites.push_back(spr);
-}
+}*/
 
 void SpriteManager::addSprite(Sprite* spr){
 	sprites.push_back(spr);
 }
-void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint textures[NMAX],GLuint& shaderProgram){
+void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint textures[NMAX], GLuint& shaderProgram, GLFWwindow* window, vector<float>& vertices, GLint uniTrans){
 
 	for (int i = 0; i < elements.size(); ++i){
+		sprites[i]->movement(window, vertices, uniTrans);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
 		glBindTexture(GL_TEXTURE_2D, textures[i]);
 		glUniform1i(glGetUniformLocation(shaderProgram, "basic_texture"), i);

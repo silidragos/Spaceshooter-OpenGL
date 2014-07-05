@@ -2,7 +2,6 @@
 #include "Player.h"
 #include "Enemy.h"
 
-#include<time.h>
 
 string LoadFileToString(const char* filepath){
 	string fileData;
@@ -186,7 +185,7 @@ int main() {
 
 		GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
 		
-		//Test - create new Instance
+		/*//Test - create new Instance
 		if (time >= 3.0f && flag1){
 			flag1 = false;
 			pl2 = new Player(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
@@ -207,16 +206,16 @@ int main() {
 			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		}
-		
-		player->Movement(window, vertices, uniTrans);
+		*/
 
-		//spr2->Movement(window, vertices,time);
-		//spr3->Movement(window, vertices,time);
+		//player->movement(window, vertices, uniTrans);
+		//spr2->movement(window, vertices,uniTrans);
+		//spr3->movement(window, vertices,uniTrans);
 
 		
 //		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 		
-		spriteMan->drawAll(elements, ebo, textures,shaderProgram);
+		spriteMan->drawAll(elements, ebo, textures,shaderProgram,window,vertices,uniTrans);
 	
 		
 	}
