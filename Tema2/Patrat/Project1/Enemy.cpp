@@ -14,13 +14,13 @@ bool Enemy::movement(GLFWwindow* window, vector<float>& vertices, GLint uniTrans
 	
 	switch (enemyType){
 	case(LINIAR) : {
-					   glm::mat4 transPart = glm::translate(glm::mat4(1.0f), glm::vec3(sin(time)/2000.0f, 0.0f, 0.0f));
+					   glm::mat4 transPart = glm::translate(glm::mat4(1.0f), glm::vec3(sin(time)/3000.0f, 0.0f, 0.0f));
 					   glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 					   trans = transPart*trans;
 	}
 		break;
 	case(SINUSOIDAL) : {
-						   glm::mat4 transPart = glm::translate(glm::mat4(1.0f), glm::vec3(2 * sin(time) / 1000.0f, 2 * sin(time*10) / 1000.0f, 0.0f));
+						   glm::mat4 transPart = glm::translate(glm::mat4(1.0f), glm::vec3(sin(time) / 3000.0f,sin(time*10) / 5000.0f, 0.0f));
 						   glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 						   trans = trans * transPart;
 	}

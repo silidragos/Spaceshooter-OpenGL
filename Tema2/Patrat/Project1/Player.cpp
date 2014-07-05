@@ -1,10 +1,7 @@
 #include "Player.h"
 
 bool Player::movement(GLFWwindow* window, vector<float>& vertices,GLint uniTrans){
-	int x;
-	int y;
 	bool ok = false;
-	
 	
 	if (glfwGetKey(window, GLFW_KEY_LEFT)){
 		//cout << "Stanga\n";
@@ -33,10 +30,15 @@ bool Player::movement(GLFWwindow* window, vector<float>& vertices,GLint uniTrans
 		ok = true;
 	}
 	if (ok == false){
-		cout << "f\n";
 		glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans)); 
 		
 	}
 
 	return ok;
+}
+float Player::getPozX(){
+	return (trans*glm::vec4(highX, highY, 1.0f,1.0f)).x;
+}
+float Player::getPozY(){
+	return (trans*glm::vec4(highX, highY, 1.0f, 1.0f)).y;
 }

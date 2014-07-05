@@ -52,7 +52,7 @@ void SpriteManager::addSprite(Sprite* spr){
 void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint textures[NMAX], GLuint& shaderProgram, GLFWwindow* window, vector<float>& vertices, GLint uniTrans){
 
 	for (int i = 0; i < elements.size(); ++i){
-		sprites[i]->movement(window, vertices, uniTrans);
+   		sprites[i]->movement(window, vertices, uniTrans);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
 		glBindTexture(GL_TEXTURE_2D, textures[i]);
 		glUniform1i(glGetUniformLocation(shaderProgram, "basic_texture"), i);

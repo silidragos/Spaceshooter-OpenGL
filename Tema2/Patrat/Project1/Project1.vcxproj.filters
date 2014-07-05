@@ -33,6 +33,9 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="pixelShader.glsl">
@@ -58,9 +61,15 @@
     <ClInclude Include="Enemy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="bug.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="blast.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -1,6 +1,7 @@
 #include "SpriteManager.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Projectile.h"
 
 
 string LoadFileToString(const char* filepath){
@@ -150,8 +151,6 @@ int main() {
 	
 
 	GLuint textures[NMAX];
-	
-	
 
 	Player* player = new Player(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
 	spriteMan->addSprite(player);
@@ -161,8 +160,8 @@ int main() {
 	//Add textures
 	//Texturile trebuie afisate in ordinea in care sunt elements!!!
 	spr2->addTexture("bug.png", textures[0],0);
-	spr3->addTexture("bug.png", textures[2],2);
-	player->addTexture("fighter.png", textures[1], 1);
+	spr3->addTexture("bug.png", textures[1],1);
+	player->addTexture("fighter.png", textures[2], 2);
 
 	//Elimina Sprite
 	//spriteMan->removeSprite(spr2, vertices, elements,textures);
@@ -174,19 +173,48 @@ int main() {
 	glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	GLint uniTrans = glGetUniformLocation(shaderProgram, "trans");
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+
+	/*glm::mat4 proj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f,-1.0f,1.0f);
+	GLint uniProj = glGetUniformLocation(shaderProgram, "orto");
+	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
+	
+	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 1.0f);
+	glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	glm::mat4 view = glm::lookAt(pos, target, up);
+	GLint uniView = glGetUniformLocation(shaderProgram, "view");
+	glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
+	*/
+	Projectile* blast;
+	GLfloat lastShoot = 0.0f;
+	int k = 3;
+
 	while (!glfwWindowShouldClose(window)){
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
-
-
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
+
+		if (glfwGetKey(window, GLFW_KEY_SPACE) && time-lastShoot>1.0f){
+			cout << "1";
+			lastShoot = time;
+			blast = new Projectile(player->getPozX(), player->getPozY(),vertices, elements);
+			blast->addTexture("blast.png", textures[k], k);
+			k++;
+			spriteMan->addSprite(blast);
+			flag1 = false;
+
+			
+			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+		}
 		
-		/*//Test - create new Instance
-		if (time >= 3.0f && flag1){
+		//Test - create new Instance
+		/*if (time >= 3.0f && flag1){
 			flag1 = false;
 			pl2 = new Player(0.8f, 1.0f, 0.8f, 1.0f, vertices, elements);
 			pl2->addTexture("fighter.png",textures[3],3);
@@ -195,9 +223,9 @@ int main() {
 			//Those 2 together
 			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
-		}
+		}*/
 		
-		//ERROR ON TEXTURES!
+		/*//ERROR ON TEXTURES!
 		if (time >= 5.0f && flag2){
 			cout << "bum";
 			flag2 = false;
