@@ -78,7 +78,7 @@ int main() {
 	//Enable alpha channel
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 	glEnable(GL_BLEND);  
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
@@ -94,15 +94,18 @@ int main() {
 
 	//Test -- Create new sprites
 	SpriteManager* spriteMan = new SpriteManager();
-	Enemy* spr2;
+	Enemy* spr2[5];
 
 	srand(time(NULL));
 
+	
 	//Creates Enemy ships
 	for (int i = 0; i < 5; ++i)
 	{
-		spr2 = new Enemy(-1.0f, -0.8f, i*0.2f, (i + 1)*0.2f, vertices, elements, rand()%2);
-		spriteMan->addSprite(spr2);
+		spr2[i] = new Enemy(-1.0f, -0.8f, i*0.2f, (i + 1)*0.2f, vertices, elements, rand()%2);
+
+		spriteMan->addSprite(spr2[i]);
+		
 	}
 
 	//Add player
@@ -112,35 +115,23 @@ int main() {
 
 	//EndTest
 
-	glGenBuffers(elements.size(), ebo);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), &vertices[0], GL_STATIC_DRAW);
-
-	for (int i = 0; i < elements.size(); ++i){
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements[i].size()*sizeof(GLuint), &elements[i][0], GL_STATIC_DRAW);
-	}
-
 	GLuint shaderProgram = compileShaders("pixelShader.glsl", "vertexShader.glsl");
 
-	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
-
-	GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
-	glEnableVertexAttribArray(texAttrib);
-	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 	
-	GLuint textures[NMAX];
-
 	//Add textures
-	
-	//Texturile trebuie afisate in ordinea in care sunt in elements!!!
-	for (int i = 0; i < 5;++i)
-	spr2->addTexture("bug.png", textures[i],i);
+	TextureManager* t = new TextureManager();
+	GLuint enTex = t->getTexture("bug.png");
 
-	player->addTexture("fighter.png", textures[5], 5);
+	GLuint blastTex = t->getTexture("blast.png");
+	//Texturile trebuie afisate in ordinea in care sunt in elements!!!
+	
+	for (int i = 0; i < 5; ++i){
+		spr2[i]->addTexture(enTex);
+	}
+
+	player->addTexture(t,"fighter.png");
+
 
 	bool flag1 = true;
 	bool flag2 = true;
@@ -180,7 +171,7 @@ int main() {
 		if (glfwGetKey(window, GLFW_KEY_SPACE) && time-lastShoot>0.5f){
 			lastShoot = time;
 			blast = new Projectile(player->getPozX(), player->getPozY(),vertices, elements);
-			blast->addTexture("blast.png", textures[k], k);
+			blast->addTexture(blastTex);
 			k++;
 			spriteMan->addSprite(blast);
 			flag1 = false;
@@ -189,18 +180,17 @@ int main() {
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		}
 		
-		/*//ERROR ON TEXTURES!
-		if (time >= 5.0f && flag2){
+		//ERROR ON TEXTURES!
+		if (time >= 0.0f && flag2){
 			cout << "bum";
 			flag2 = false;
-			spriteMan->removeSprite(spr2,vertices,elements,textures);
+			spriteMan->removeSprite(player,vertices,elements);
 
 			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		}
-		*/
 	
-		spriteMan->drawAll(elements, ebo, textures,shaderProgram,window,vertices,uniTrans);
+		spriteMan->drawAll(elements, ebo,shaderProgram,window,vertices,uniTrans);
 	
 		
 	}

@@ -43,7 +43,7 @@
       <Filter>Header Files\Sprites\Types</Filter>
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
-      <Filter>Header Files\Sprites\Types</Filter>
+      <Filter>Header Files\Sprites</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -74,7 +74,7 @@
       <Filter>Header Files\Sprites\Types</Filter>
     </ClInclude>
     <ClInclude Include="Sprite.h">
-      <Filter>Header Files\Sprites\Types</Filter>
+      <Filter>Header Files\Sprites</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

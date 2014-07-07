@@ -43,19 +43,20 @@ string SpriteManager::LoadFileToString(const char* filepath){
 void SpriteManager::addSprite(Sprite* spr){
 	sprites.push_back(spr);
 }
-void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint textures[NMAX], GLuint& shaderProgram, GLFWwindow* window, vector<float>& vertices, GLint uniTrans){
+void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint& shaderProgram, GLFWwindow* window, vector<float>& vertices, GLint uniTrans){
 
 	for (int i = 0; i < elements.size(); ++i){
    		sprites[i]->movement(window, vertices, uniTrans);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
-		glBindTexture(GL_TEXTURE_2D, textures[i]);
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, sprites[i]->getTexture());
 		glUniform1i(glGetUniformLocation(shaderProgram, "basic_texture"), i);
 		glDrawElements(GL_TRIANGLES, elements[i].size(), GL_UNSIGNED_INT, 0);
 	}
 
 }
 
-void SpriteManager::removeSprite(Sprite* spr, vector<float> &mainVector, vector<vector<GLuint>>& elements,GLuint textures[NMAX]){
+void SpriteManager::removeSprite(Sprite* spr, vector<float> &mainVector, vector<vector<GLuint>>& elements){
 	int pozSpr = spr->getPozInEL();
 	for (int i = 0; i < sprites.size(); ++i){
 		if (sprites[i] == spr){
@@ -63,7 +64,7 @@ void SpriteManager::removeSprite(Sprite* spr, vector<float> &mainVector, vector<
 			spr->freeMemory(mainVector, elements);
 			for (int i = 0; i < sprites.size(); ++i){
 				if (sprites[i]->getPozInEL()>pozSpr){
-					//sprites[i]->correctValues(mainVector, elements, textures);
+					sprites[i]->correctValues(mainVector, elements);
 				}
 			}
 			break;
