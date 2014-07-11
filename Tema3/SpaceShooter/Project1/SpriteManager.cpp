@@ -43,14 +43,19 @@ string SpriteManager::LoadFileToString(const char* filepath){
 void SpriteManager::addSprite(Sprite* spr){
 	sprites.push_back(spr);
 }
+void SpriteManager::addEntity(Entity* e){
+	entities.push_back(e);
+}
 void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint& shaderProgram, GLFWwindow* window, vector<float>& vertices, GLint uniTrans){
 
 	for (int i = 0; i < elements.size(); ++i){
-   		sprites[i]->movement(window, vertices, uniTrans);
+   		entities[i]->physics->movement(window);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
+		
 		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, sprites[i]->getTexture());
+		glBindTexture(GL_TEXTURE_2D, entities[i]->sprite->getTexture());
 		glUniform1i(glGetUniformLocation(shaderProgram, "basic_texture"), i);
+		
 		glDrawElements(GL_TRIANGLES, elements[i].size(), GL_UNSIGNED_INT, 0);
 	}
 
@@ -60,13 +65,17 @@ void SpriteManager::removeSprite(Sprite* spr, vector<float> &mainVector, vector<
 	int pozSpr = spr->getPozInEL();
 	for (int i = 0; i < sprites.size(); ++i){
 		if (sprites[i] == spr){
+			sprites[i]->freeMemory(mainVector, elements);
 			sprites.erase(sprites.begin() + i);
-			spr->freeMemory(mainVector, elements);
+			entities.erase(entities.begin() + i);
+			
 			for (int i = 0; i < sprites.size(); ++i){
 				if (sprites[i]->getPozInEL()>pozSpr){
-					sprites[i]->correctValues(mainVector, elements);
+				sprites[i]->correctValues(mainVector, elements);
 				}
 			}
+
+			//elements.erase(elements.end()-1);
 			break;
 		}
 	}

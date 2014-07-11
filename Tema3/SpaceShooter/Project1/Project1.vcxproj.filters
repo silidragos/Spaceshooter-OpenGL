@@ -19,6 +19,15 @@
     <Filter Include="Header Files\Sprites\Types">
       <UniqueIdentifier>{9783c1b8-b603-432d-8032-b4cb74c9bb4d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Entity">
+      <UniqueIdentifier>{4ec605bd-e405-4cd6-aefd-c9793c720070}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Physics">
+      <UniqueIdentifier>{589e2993-b638-4cb4-96bd-9c83158979bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Physics\Types">
+      <UniqueIdentifier>{eb92eb9d-3b49-4324-9e13-ab9ce61071f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program1.cpp">
@@ -33,17 +42,23 @@
     <ClCompile Include="TextureManager.cpp">
       <Filter>Header Files\Sprites</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Header Files\Sprites\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Header Files\Sprites\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="Projectile.cpp">
-      <Filter>Header Files\Sprites\Types</Filter>
-    </ClCompile>
     <ClCompile Include="Sprite.cpp">
       <Filter>Header Files\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>Header Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerPhysics.cpp">
+      <Filter>Header Files\Physics\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyPhysics.cpp">
+      <Filter>Header Files\Physics\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectilePhysics.cpp">
+      <Filter>Header Files\Physics\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -64,17 +79,23 @@
     <ClInclude Include="TextureManager.h">
       <Filter>Header Files\Sprites</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>Header Files\Sprites\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files\Sprites\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="Projectile.h">
-      <Filter>Header Files\Sprites\Types</Filter>
-    </ClInclude>
     <ClInclude Include="Sprite.h">
       <Filter>Header Files\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerPhysics.h">
+      <Filter>Header Files\Physics\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyPhysics.h">
+      <Filter>Header Files\Physics\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectilePhysics.h">
+      <Filter>Header Files\Physics\Types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

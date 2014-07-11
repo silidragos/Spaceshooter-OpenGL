@@ -12,7 +12,8 @@ private:
 	int pozInVectPrinc;
 	int pozInEl;
 	GLuint texture;
-
+	
+	float highX, highY,lowX,lowY;
 public:
 	Sprite(float lowX, float highX, float lowY, float highY, vector<float> &mainVector,vector<vector<GLuint>>& elements);
 	void freeMemory(vector<float> &mainVector, vector<vector<GLuint>>& elements);
@@ -24,8 +25,11 @@ public:
 
 	int getPozInEL();
 	int getPozInVectPrinc();
-	
-	virtual bool movement(GLFWwindow* window, vector<float> &vertices, GLint uniTrans)=0;
+
+	float getHighX();
+	float getHighY();
+	float getLowX();
+	float getLowY();
 };
 
 #endif

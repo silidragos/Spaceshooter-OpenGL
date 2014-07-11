@@ -1,6 +1,11 @@
 #include"Sprite.h"
 
 Sprite::Sprite(float lowX, float highX, float lowY, float highY, vector<float> &mainVector, vector<vector<GLuint>>& elements){
+	this->highX = highX;
+	this->highY = highY;
+	this->lowX = lowX;
+	this->lowY = lowY;
+
 	int l = mainVector.size()/5;
 
 	//Top Left
@@ -65,11 +70,27 @@ void Sprite::freeMemory(vector<float> &mainVector, vector<vector<GLuint>>& eleme
 }
 void Sprite::correctValues(vector<float>& mainVector, vector<vector<GLuint>>&elements){
 	pozInEl--;
+	for (int i = 0; i < 6; ++i) elements[pozInEl][i] -= 4;
 	pozInVectPrinc -= 20;
+	
 }
+
 int Sprite::getPozInEL(){
 	return pozInEl;
 }
 int Sprite::getPozInVectPrinc(){
 	return pozInVectPrinc;
+}
+
+float Sprite::getHighX(){
+	return highX;
+}
+float Sprite::getHighY(){
+	return highY;
+}
+float Sprite::getLowX(){
+	return lowX;
+}
+float Sprite::getLowY(){
+	return lowY;
 }
