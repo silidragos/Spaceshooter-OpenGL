@@ -97,21 +97,17 @@ int main() {
 
 	//Test -- Create new sprites
 	SpriteManager* spriteMan = new SpriteManager();
+
 	vector<Entity*> EnEnt;
 	vector<Sprite*> spr2;
 	spr2.resize(5);
 	EnEnt.resize(5);
 	
-
-	srand(time(NULL));
-
-	
-	//Creates Enemy ships
+	//Creates Enemy ships Sprites
 	for (int i = 0; i < 5; ++i)
 	{
 		spr2[i] = new Sprite(-1.0f+i*0.2f, -1.0f+(i + 1)*0.2f, 0.6, 0.8f, vertices, elements);
 		spriteMan->addSprite(spr2[i]);
-		
 	}
 
 	//EndTest
@@ -120,11 +116,10 @@ int main() {
 
 	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 
+	//Translations
 	glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	GLint uniTrans = glGetUniformLocation(shaderProgram, "trans");
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
-	
-
 
 	//Camera Transformations
 	glm::mat4 proj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f,-1.0f,1.0f);
@@ -138,16 +133,16 @@ int main() {
 	glm::mat4 view = glm::lookAt(pos, target, up);
 	GLint uniView = glGetUniformLocation(shaderProgram, "view");
 	glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
-
-
 	//
 
 	//Enemy Entities
+	srand(time(NULL));
+
 	for (int i = 0; i < 5; ++i){
 		EnEnt[i] = new Entity(spr2[i], new EnemyPhysics(uniTrans, rand() % 2));
 		spriteMan->addEntity(EnEnt[i]);
 
-		EnEnt[i]->physics->setAABB(EnEnt[i]->sprite->getLowX(), EnEnt[i]->sprite->getHighX(), EnEnt[i]->sprite->getLowY(), EnEnt[i]->sprite->getHighY());
+		EnEnt[i]->physics->setAABB(EnEnt[i]->sprite->getLowX() + 0.04f, EnEnt[i]->sprite->getHighX() - 0.04f, EnEnt[i]->sprite->getLowY() + 0.06f, EnEnt[i]->sprite->getHighY() - 0.06f);
 	}
 
 	//Add player
@@ -157,21 +152,15 @@ int main() {
 	spriteMan->addEntity(playerEnt);
 	playerEnt->physics->setAABB(playerEnt->sprite->getLowX(), playerEnt->sprite->getHighX(), playerEnt->sprite->getLowY(), playerEnt->sprite->getHighY());
 
-	
 	//Add textures
 	TextureManager* t = new TextureManager();
 	GLuint enTex = t->getTexture("bug.png");
-
 	GLuint blastTex = t->getTexture("blast.png");
 	//Texturile trebuie afisate in ordinea in care sunt in elements!!!
-	
-	
-	
 	for (int i = 0; i < 5; ++i){
 		spr2[i]->addTexture(enTex);
 	}
 	player->addTexture(t, "fighter.png");
-	
 	
 	//Variables used in while
 	bool flag1 = false;
@@ -207,28 +196,19 @@ int main() {
 
 			projEnt = new Entity(blast, new ProjectilePhysics(uniTrans));
 			spriteMan->addEntity(projEnt);
+			
 			//Make AABB tests
 			flag1 = true;
 			
-			projEnt->physics->setAABB(projEnt->sprite->getLowX(), projEnt->sprite->getHighX(), projEnt->sprite->getLowY(), projEnt->sprite->getHighY());
+			projEnt->physics->setAABB(projEnt->sprite->getLowX() + 0.06f, projEnt->sprite->getHighX() - 0.06f, projEnt->sprite->getLowY() + 0.06f, projEnt->sprite->getHighY() - 0.06f);
 
 			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		}
-		else if (time - lastShoot>0.5f){
+		else if (time - lastShoot>1.0f){
+			//So it's not checked everytime.
 			flag1 = false;
 		}
-		
-		//DELETE SPECIFIC STUFF
-		/*if (time >= 2.0f && flag2){
-			cout << "bum";
-			flag2 = false;
-			spriteMan->removeSprite(spr2[2],vertices,elements);
-			EnEnt.erase(EnEnt.begin()+2);
-
-			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
-			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
-		}*/
 
 		if (flag1){
 			for (int i = 0; i < spr2.size(); ++i)
@@ -246,12 +226,12 @@ int main() {
 			}
 		}
 		
-		
 		spriteMan->drawAll(elements, ebo,shaderProgram,window,vertices,uniTrans);
-	
-		
 	}
 
+	//Free memory
+	delete playerEnt;
+	for (int i = 0; i < EnEnt.size(); ++i) delete EnEnt[i];
 	glDeleteProgram(shaderProgram);
 	glDeleteBuffers(1, &vbo);
 	glDeleteBuffers(elements.size(), ebo);
