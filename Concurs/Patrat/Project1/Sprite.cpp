@@ -55,10 +55,6 @@ void Sprite::freeMemory(vector<float> &mainVector, vector<vector<GLuint>>& eleme
 	elements.erase(elements.begin() + pozInEl);
 	mainVector.erase(mainVector.begin() + pozInVectPrinc, mainVector.begin() + pozInVectPrinc + 20);
 }
-void Sprite::correctValues(vector<float>& mainVector, vector<vector<GLuint>>&elements){
-	pozInEl--;
-	pozInVectPrinc -= 20;
-}
 int Sprite::getPozInEL(){
 	return pozInEl;
 }
@@ -70,7 +66,7 @@ bool Sprite::movement(GLFWwindow* window, vector<float>& vertices, GLint uniTran
 	int x;
 	int y;
 	GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
-	glm::mat4 transPart = glm::translate(glm::mat4(1.0f), glm::vec3(sin(time) / 2500.0f, 0.0f, 0.0f));
+	glm::mat4 transPart = glm::translate(glm::mat4(1.0f), glm::vec3(sin(time*10) / 25.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 	trans = transPart*trans;
 	

@@ -12,6 +12,7 @@
 #include<fstream>
 #include<string>
 #include<vector>
+#include<stdlib.h>
 
 #include<time.h>
 
@@ -26,13 +27,11 @@ private:
 	int pozInEl;
 	float speed;
 	vector<float> vertices;
-	GLuint texture;
 	glm::mat4 trans;
 
 public:
 	Sprite(float lowX, float highX, float lowY, float highY, vector<float> &mainVector, vector<vector<GLuint>>& elements);
 	void freeMemory(vector<float> &mainVector, vector<vector<GLuint>>& elements);
-	void correctValues(vector<float>& mainVector, vector<vector<GLuint>>&elements);
 
 	int getPozInEL();
 	int getPozInVectPrinc();

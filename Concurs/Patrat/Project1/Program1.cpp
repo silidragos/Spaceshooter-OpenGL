@@ -1,4 +1,3 @@
-#include "SpriteManager.h"
 #include "Sprite.h"
 
 void FlipTexture(unsigned char* image_data, int x, int y, int n)
@@ -62,54 +61,50 @@ GLuint compileShaders(char* pixelShaders, char* vertexShaders){
 
 }
 
-//void AddSprite()
-//void removeSprite()
-//void drawAll()
-/*
 vector<Sprite*> sprites;
 
+void addSprite(Sprite* spr){
+sprites.push_back(spr);}
+void removeSprite(vector<float> &mainVector, vector<vector<GLuint>>& elements){
 
-void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint& shaderProgram, GLFWwindow* window, vector<float>& vertices, GLint uniTrans){
+	elements.erase(elements.end()-1);
+	mainVector.erase(mainVector.end() - 20, mainVector.end());
+	sprites.erase(sprites.end() - 1);
+}
+void drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint& shaderProgram, GLFWwindow* window, vector<float>& vertices, GLint uniTrans){
 
 for (int i = 0; i < elements.size(); ++i){
-sprites[i]->movement(window, vertices, uniTrans);
-glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
+	sprites[i]->movement(window, vertices, uniTrans);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
 
-glDrawElements(GL_TRIANGLES, elements[i].size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, elements[i].size(), GL_UNSIGNED_INT, 0);
+	}	
+}
+void reGenBuffers(GLuint vbo, GLuint ebo[NMAX], vector<vector<GLuint>>& elements, vector<float>& vertices, GLuint& shaderProgram){
+	glGenBuffers(1, &vbo);
+	glGenBuffers(elements.size(), ebo);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), &vertices[0], GL_STATIC_DRAW);
+
+	for (int i = 0; i < elements.size(); ++i){
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements[i].size()*sizeof(GLuint), &elements[i][0], GL_STATIC_DRAW);
+	}
+
+	shaderProgram = compileShaders("pixelShader.glsl", "vertexShader.glsl");
+
+	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+	glEnableVertexAttribArray(posAttrib);
+	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+
+	GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
+	glEnableVertexAttribArray(texAttrib);
+	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 }
 
-}
-*/
-/*
-void SpriteManager::reGenBuffers(GLuint vbo, GLuint ebo[NMAX], vector<vector<GLuint>>& elements, vector<float>& vertices,GLuint& shaderProgram){
-glGenBuffers(1, &vbo);
-glGenBuffers(elements.size(), ebo);
-
-glBindBuffer(GL_ARRAY_BUFFER, vbo);
-glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), &vertices[0], GL_STATIC_DRAW);
-
-for (int i = 0; i < elements.size(); ++i){
-glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
-glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements[i].size()*sizeof(GLuint), &elements[i][0], GL_STATIC_DRAW);
-}
-
-shaderProgram = compileShaders("pixelShader.glsl", "vertexShader.glsl");
-
-GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-glEnableVertexAttribArray(posAttrib);
-glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
-
-GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
-glEnableVertexAttribArray(texAttrib);
-glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-}
-
-
-
-*/
 
 int main() {
-
 	glfwInit();
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -132,7 +127,6 @@ int main() {
 	glewExperimental = GL_TRUE;
 	glewInit();
 
-
 	//Initialize GLEW
 	if (glewInit() != GLEW_OK){
 		fprintf(stderr, "Glew is gone!\n");
@@ -153,19 +147,17 @@ int main() {
 	glGenBuffers(1, &vbo);
 	vector<float> vertices;
 	
-
 	GLuint ebo[NMAX];
 	vector<vector<GLuint>> elements;
 
-	SpriteManager* spriteMan = new SpriteManager();
 	Sprite* s = new Sprite(-1.0f, -0.9f, -1.0f, -0.9f, vertices, elements);
-	spriteMan->addSprite(s);
+	addSprite(s);
 
 	//EndTest
 	GLuint texture;
 	GLuint shaderProgram = compileShaders("pixelShader.glsl", "vertexShader.glsl");
 
-	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+	reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 	glGenTextures(1, &texture);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -192,8 +184,14 @@ int main() {
 	GLint uniTrans = glGetUniformLocation(shaderProgram, "trans");
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 
+	srand(time(NULL));
+
+	string strFPS;
 	float fps = 0;
 	float lastSec = 0.0f;
+	float randY;
+	int randSgn;
+	int count = 0;
 	while (!glfwWindowShouldClose(window)){
 
 		glfwSwapBuffers(window);
@@ -206,14 +204,38 @@ int main() {
 			fps++;
 		}
 		else{
+			strFPS.clear();
+			strFPS = to_string(fps);
+			strFPS = "openGL " + strFPS;
+			glfwSetWindowTitle(window, strFPS.c_str());
+
 			cout << fps << " " << time << endl;
 			fps = 0;
 			lastSec = time;
 		}
-	
-		spriteMan->drawAll(elements, ebo, shaderProgram, window, vertices, uniTrans);
+		
+
+		if (glfwGetKey(window, GLFW_KEY_KP_ADD)){
+
+			randY = (rand() % 99) / 100.0f;
+			randSgn = rand() % 2;
+			cout << "Rand-" << randY << endl;
+
+			s = new Sprite(0.0f, 0.1f,randSgn - randY - 0.1f, randSgn - randY,vertices, elements);
+			cout << ++count << endl;
+			addSprite(s);
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_MINUS) && count>0){
+			removeSprite(vertices,elements);
+			cout << --count << endl;
+		}
+		reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+
+		drawAll(elements, ebo, shaderProgram, window, vertices, uniTrans);
 		
 	}
+	sprites.clear();
 
 	glDeleteProgram(shaderProgram);
 	glDeleteBuffers(1, &vbo);
