@@ -69,6 +69,9 @@
     <ClCompile Include="Anim.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="AnimManager.cpp">
+      <Filter>Header Files\Sprites</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="pixelShader.glsl">
@@ -117,6 +120,9 @@
     </ClInclude>
     <ClInclude Include="Include.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimManager.h">
+      <Filter>Header Files\Sprites</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

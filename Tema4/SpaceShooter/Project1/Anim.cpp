@@ -9,6 +9,14 @@ Animatie::Animatie(){
 	loop = true;
 }
 
+void Animatie::setIsWorking(bool b){
+	isWorking = b;
+}
+
+bool Animatie::getIsWorking(){
+	return isWorking;
+}
+
 void Animatie::addDictEntry(Dict_Entry* f){
 	frames.push_back(f);
 }
@@ -32,10 +40,20 @@ bool Animatie::nextFrame(vector<float> &mainVector){
 		currentFrame++;
 		return true;
 	}
+
+	isWorking = false;
 	return false;
 	
 }
 
 void Animatie::setSprite(Sprite* s){
 	this->s = s;
+}
+
+void Animatie::setLoop(bool state){
+	loop = state;
+}
+
+void Animatie::stop(){
+	currentFrame = 0;
 }

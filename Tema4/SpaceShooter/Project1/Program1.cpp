@@ -8,6 +8,7 @@
 
 #include"XML.h"
 #include"Anim.h"
+#include"AnimManager.h"
 
 #include<fstream>
 #include"glm\gtc\matrix_transform.hpp"
@@ -168,20 +169,44 @@ int main() {
 	for (int i = 0; i < 5; ++i){
 		spr2[i]->addTexture(enTex);
 	}
-	player->addTexture(t, "fighter.png");
+
+	player->addTexture(t->getTexture("player.png"));
 
 	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 
 	//Loading Animations
+	AnimManager* animManager = new AnimManager();
+	animManager->setTimePerFrame(0.2f);
+
 	vector<Dict_Entry*> loadedSprites;
 	getXml(t,loadedSprites);
+	
 	Animatie* anim = new Animatie();
 	anim->setSprite(player);
 	for (int i = 0; i < 13; i++)
 		anim->addDictEntry(loadedSprites[i]);
-	player->addTexture(t->getTexture("player.png"));
+
+	Animatie* animLeft = new Animatie();
+	animLeft->setSprite(player);
+	for (int i = 16; i < 31; ++i){
+		animLeft->addDictEntry(loadedSprites[i]);
+	}
+
+	Animatie* animRight = new Animatie();
+	animRight->setSprite(player);
+	for (int i = 32; i < 42; ++i){
+		animRight->addDictEntry(loadedSprites[i]);
+	}
+
 	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+
+	animManager->addAnim("Idle", anim);
+	animManager->startAnim("Idle");
+
+	animManager->addAnim("Left", animLeft);
+	animManager->addAnim("Right", animRight);
+
 
 	//Variables used in while
 	bool flag1 = false;
@@ -254,11 +279,25 @@ int main() {
 			}
 		}
 
-		if (time - lastAnim > 0.1f){
-			anim->nextFrame(vertices);
-			lastAnim = time;
+		if (glfwGetKey(window, GLFW_KEY_LEFT)){
+			animManager->stopAnim("Idle");
+			animManager->stopAnim("Right");
+			animManager->startAnim("Left");
 		}
-			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+		else if (glfwGetKey(window, GLFW_KEY_RIGHT)){
+			animManager->stopAnim("Idle");
+			animManager->stopAnim("Left");
+			animManager->startAnim("Right");
+		}
+		else{
+			animManager->stopAnim("Left");
+			animManager->stopAnim("Right");
+			animManager->startAnim("Idle");
+		}
+		
+
+		animManager->playActiveAnim(time, vertices);
+		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 
 		spriteMan->drawAll(elements, ebo,shaderProgram,window,vertices,uniTrans,dt);
 	}
