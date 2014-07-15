@@ -49,10 +49,10 @@ void SpriteManager::addSprite(Sprite* spr){
 void SpriteManager::addEntity(Entity* e){
 	entities.push_back(e);
 }
-void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint& shaderProgram, GLFWwindow* window, vector<float>& vertices, GLint uniTrans){
+void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint& shaderProgram, GLFWwindow* window, vector<float>& vertices, GLint uniTrans,float dt){
 
 	for (int i = 0; i < elements.size(); ++i){
-   		entities[i]->physics->movement(window);
+   		entities[i]->physics->movement(window,dt);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
 		
 		glActiveTexture(GL_TEXTURE0 + i);

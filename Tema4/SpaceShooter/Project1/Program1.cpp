@@ -89,7 +89,7 @@ int main() {
 	//Enable alpha channel
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 	glEnable(GL_BLEND);  
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
@@ -169,19 +169,11 @@ int main() {
 		spr2[i]->addTexture(enTex);
 	}
 	player->addTexture(t, "fighter.png");
-	
-	//Variables used in while
-	bool flag1 = false;
-	bool flag2 = true;
-	Sprite* blast;
-	Entity* projEnt;
-	GLfloat lastShoot = 0.0f;
-	float lastAnim = 0.0f;
-	int k = 6;
 
 	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 
+	//Loading Animations
 	vector<Dict_Entry*> loadedSprites;
 	getXml(t,loadedSprites);
 	Animatie* anim = new Animatie();
@@ -190,6 +182,17 @@ int main() {
 		anim->addDictEntry(loadedSprites[i]);
 	player->addTexture(t->getTexture("player.png"));
 	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+
+	//Variables used in while
+	bool flag1 = false;
+	bool flag2 = true;
+	vector<Sprite*> blast;
+	vector<Entity*> projEnt;
+	GLfloat lastShoot = 0.0f;
+	float lastAnim = 0.0f;
+	float lastFrame = 0.0f;
+	float dt;
+	int k = 6;
 
 	while (!glfwWindowShouldClose(window)){
 
@@ -200,25 +203,31 @@ int main() {
 
 		GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
 
+		dt = time - lastFrame;
+		lastFrame = time;
+
 		//Create Projectile
-		if (glfwGetKey(window, GLFW_KEY_SPACE) && time-lastShoot>0.5f){
+		if (glfwGetKey(window, GLFW_KEY_SPACE) && time-lastShoot>0.2f){
 			lastShoot = time;
-			blast = new Sprite(playerEnt->physics->getPozX(playerEnt->sprite->getHighX(), playerEnt->sprite->getHighY())-0.2f, 
+			Sprite* sBlast = new Sprite(playerEnt->physics->getPozX(playerEnt->sprite->getHighX(), playerEnt->sprite->getHighY())-0.2f, 
 				playerEnt->physics->getPozX(playerEnt->sprite->getHighX(), playerEnt->sprite->getHighY()),
 				playerEnt->physics->getPozY(playerEnt->sprite->getHighX(), playerEnt->sprite->getHighY()) -0.1f,
 				playerEnt->physics->getPozY(playerEnt->sprite->getHighX(), playerEnt->sprite->getHighY()) + 0.1f, 
 				vertices, elements);
-			blast->addTexture(blastTex);
+			sBlast->addTexture(blastTex);
 			k++;
-			spriteMan->addSprite(blast);
+			spriteMan->addSprite(sBlast);
+			blast.push_back(sBlast);
 
-			projEnt = new Entity(blast, new ProjectilePhysics(uniTrans));
-			spriteMan->addEntity(projEnt);
+
+			Entity* sProjEnt = new Entity(sBlast, new ProjectilePhysics(uniTrans));
+			projEnt.push_back(sProjEnt);
+			spriteMan->addEntity(sProjEnt);
 			
 			//Make AABB tests
 			flag1 = true;
 			
-			projEnt->physics->setAABB(projEnt->sprite->getLowX() + 0.06f, projEnt->sprite->getHighX() - 0.06f, projEnt->sprite->getLowY() + 0.06f, projEnt->sprite->getHighY() - 0.06f);
+			sProjEnt->physics->setAABB(sProjEnt->sprite->getLowX() + 0.06f, sProjEnt->sprite->getHighX() - 0.06f, sProjEnt->sprite->getLowY() + 0.06f, sProjEnt->sprite->getHighY() - 0.06f);
 
 			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
@@ -229,18 +238,19 @@ int main() {
 		}
 
 		if (flag1){
+			for (int j = 0; j < projEnt.size();j++)
 			for (int i = 0; i < spr2.size(); ++i)
-			if (projEnt->physics->AABBvsAABB(EnEnt[i]->physics->getAABB())){
+			if (projEnt[j]->physics->AABBvsAABB(EnEnt[i]->physics->getAABB())){
 				spriteMan->removeSprite(spr2[i], vertices, elements);
 				spr2.erase(spr2.begin() + i);
 				EnEnt.erase(EnEnt.begin() + i);
 
-				spriteMan->removeSprite(blast, vertices, elements);
-				delete projEnt;
+				spriteMan->removeSprite(projEnt[j]->sprite, vertices, elements);
+				projEnt.erase(projEnt.begin() + j);
 
 				spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 				glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
-				
+				break;
 			}
 		}
 
@@ -250,7 +260,7 @@ int main() {
 		}
 			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 
-		spriteMan->drawAll(elements, ebo,shaderProgram,window,vertices,uniTrans);
+		spriteMan->drawAll(elements, ebo,shaderProgram,window,vertices,uniTrans,dt);
 	}
 
 	//Free memory

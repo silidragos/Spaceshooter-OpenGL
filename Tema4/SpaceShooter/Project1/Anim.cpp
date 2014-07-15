@@ -16,7 +16,6 @@ void Animatie::addDictEntry(Dict_Entry* f){
 bool Animatie::nextFrame(vector<float> &mainVector){
 	//Change UV-s using frames[currentFrame];
 	float lowX, lowY, highX, highY; 
-	cout << currentFrame << endl;
 	highX = frames[currentFrame]->x / 1024.0f;
 	lowY = frames[currentFrame]->y / 512.0f;
 	lowX = (frames[currentFrame]->x + frames[currentFrame]->width) / 1024.0f;

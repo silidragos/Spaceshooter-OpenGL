@@ -17,7 +17,7 @@ protected:
 	AABB aabb;
 public:
 	Physics(GLint uniTrans);
-	virtual bool movement(GLFWwindow*) = 0;
+	virtual bool movement(GLFWwindow*,float) = 0;
 	virtual float getPozX(float, float) = 0;
 	virtual float getPozY(float, float) = 0;
 

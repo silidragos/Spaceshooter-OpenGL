@@ -8,7 +8,7 @@ private:
 
 public:
 	ProjectilePhysics(GLint uniTrans);
-	bool movement(GLFWwindow* window);
+	bool movement(GLFWwindow* window,float dt);
 
 	float getPozX(float highX, float highY){ return 0; }
 	float getPozY(float highX, float highY){ return 0; }

@@ -17,22 +17,22 @@ EnemyPhysics::EnemyPhysics(GLint uniTrans,int t) :Physics(uniTrans){
 
 }
 
-bool EnemyPhysics::movement(GLFWwindow* window){
+bool EnemyPhysics::movement(GLFWwindow* window,float dt){
 	int x;
 	int y;
 	bool ok = true;
-	speed = 0.5f/5;
+	speed = 1;
 	GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
 
 	switch (enemyType){
 	case(LINIAR) : {
-					   glm::mat4 transPart = glm::translate(glm::mat4(1.0f), glm::vec3(sin(time) /500.0f, 0.0f, 0.0f));
+					   glm::mat4 transPart = glm::translate(glm::mat4(1.0f), dt*glm::vec3(sin(time)/1.5f, 0.0f, 0.0f));
 					   glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 					   trans = transPart*trans;
 	}
 		break;
 	case(SINUSOIDAL) : {
-						   glm::mat4 transPart = glm::translate(glm::mat4(1.0f), glm::vec3(sin(time) / 500.0f, sin(time * 10) / 5000.0f, 0.0f));
+						   glm::mat4 transPart = glm::translate(glm::mat4(1.0f), dt*glm::vec3(sin(time) / 1.5f, sin(time*10)/2, 0.0f));
 						   glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 						   trans = trans * transPart;
 	}

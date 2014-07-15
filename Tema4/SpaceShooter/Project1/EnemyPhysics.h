@@ -11,7 +11,7 @@ private:
 
 public:
 	EnemyPhysics(GLint uniTrans,int type);
-	bool movement(GLFWwindow* window);
+	bool movement(GLFWwindow* window,float dt);
 
 	float getPozX(float x, float y){ return 0; }
 	float getPozY(float x, float y){ return 0; }

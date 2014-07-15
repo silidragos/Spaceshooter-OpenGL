@@ -9,7 +9,7 @@ private:
 
 public:
 	PlayerPhysics(GLint uniTrans);
-	bool movement(GLFWwindow* window);
+	bool movement(GLFWwindow* window,float dt);
 
 	float getPozX(float highX, float highY);
 	float getPozY(float highX, float highY);

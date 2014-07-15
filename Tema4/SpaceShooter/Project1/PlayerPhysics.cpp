@@ -1,34 +1,34 @@
 #include "PlayerPhysics.h"
 #include"glm\gtc\matrix_transform.hpp"
 #include"glm\gtc\type_ptr.hpp"
-
 PlayerPhysics::PlayerPhysics(GLint uniTrans):Physics(uniTrans){
-	speed = 0.5f / 100.0f;
-	transXP = glm::translate(glm::mat4(1.0f), glm::vec3(speed, 0.0f, 0.0f));
-	transYP = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, speed, 0.0f));
-	transXM = glm::translate(glm::mat4(1.0f), glm::vec3(-speed, 0.0f, 0.0f));
-	transYM = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -speed, 0.0f));
+	speed = 0.5f*3;
+	
 }
 
-bool PlayerPhysics::movement(GLFWwindow* window){
+bool PlayerPhysics::movement(GLFWwindow* window,float dt){
 	bool ok = false;
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT)){
+		transXM = glm::translate(glm::mat4(1.0f), glm::vec3(-dt*speed, 0.0f, 0.0f));
 		glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		trans = trans*transXM;
 		ok = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT)){
+		transXP = glm::translate(glm::mat4(1.0f), glm::vec3(dt*speed, 0.0f, 0.0f));
 		glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		trans = trans*transXP;
 		ok = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_UP)){
+		transYP = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, dt*speed, 0.0f));
 		glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		trans = trans*transYP;
 		ok = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_DOWN)){
+		transYM = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -dt*speed, 0.0f));
 		glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		trans = trans*transYM;
 		ok = true;
