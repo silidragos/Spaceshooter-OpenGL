@@ -10,6 +10,7 @@
 #include"Anim.h"
 #include"AnimManager.h"
 
+#include<iostream>
 #include<fstream>
 #include"glm\gtc\matrix_transform.hpp"
 #include"glm\gtc\type_ptr.hpp"
@@ -130,19 +131,22 @@ int main() {
 	GLint uniTrans = glGetUniformLocation(shaderProgram, "trans");
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 
-	//Camera Transformations
-	glm::mat4 proj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f,-1.0f,1.0f);
-	GLint uniProj = glGetUniformLocation(shaderProgram, "orto");
-	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
-	
-	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 1.0f);
-	glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	glm::mat4 view = glm::lookAt(pos, target, up);
+	// Set up projection
+		glm::mat4 view = glm::lookAt(
+		glm::vec3(0.0f, 0.0f, 2.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f)
+		);
 	GLint uniView = glGetUniformLocation(shaderProgram, "view");
 	glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
-	//
+	
+	
+	//glm::mat4 proj = glm::perspective(45.0f, 800.0f / 600.0f, 0.0f, 100.0f);
+	glm::mat4 proj = glm::ortho(-1.0f,1.0f,-1.0f,1.0f,0.0f,100.0f);
+	GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
+
+
 
 	//Enemy Entities
 	srand(time(NULL));
@@ -309,6 +313,19 @@ int main() {
 			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		}
+
+
+		//Camera Projection/View
+		//Following camera?
+		/*
+		float pozX = playerEnt->physics->getPozX(playerEnt->sprite->getHighX(), playerEnt->sprite->getHighY());
+		float pozY = playerEnt->physics->getPozY(playerEnt->sprite->getHighX(), playerEnt->sprite->getHighY());
+		cout << pozX << " " << pozY << endl;
+		glm::mat4 proj = glm::ortho(-1.0f, 1.0f, -0.25f+ pozY, 1.75f + pozY, 0.0f, 100.0f);
+		*/
+
+		glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
 
 		spriteMan->drawAll(elements, ebo,shaderProgram,window,vertices,uniTrans,dt);
 	}
