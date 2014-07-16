@@ -209,17 +209,19 @@ int main() {
 
 
 	//Variables used in while
-	bool flag1 = false;
-	bool flag2 = true;
 	vector<Sprite*> blast;
 	vector<Entity*> projEnt;
+
 	GLfloat lastShoot = 0.0f;
 	float lastAnim = 0.0f;
 	float lastFrame = 0.0f;
-	float dt;
-	int k = 6;
 
-	while (!glfwWindowShouldClose(window)){
+	//Check How much time a Blast should last
+	vector<float> blastLifeTime;
+	float blastLife = 2.0f;
+	float dt;
+
+	while (!glfwWindowShouldClose(window) && !glfwGetKey(window,GLFW_KEY_ESCAPE)){
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -228,8 +230,6 @@ int main() {
 
 		GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
 
-		dt = time - lastFrame;
-		lastFrame = time;
 
 		//Create Projectile
 		if (glfwGetKey(window, GLFW_KEY_SPACE) && time-lastShoot>0.2f){
@@ -240,30 +240,23 @@ int main() {
 				playerEnt->physics->getPozY(playerEnt->sprite->getHighX(), playerEnt->sprite->getHighY()) + 0.1f, 
 				vertices, elements);
 			sBlast->addTexture(blastTex);
-			k++;
 			spriteMan->addSprite(sBlast);
 			blast.push_back(sBlast);
+			blastLifeTime.push_back(0.0f);
 
 
 			Entity* sProjEnt = new Entity(sBlast, new ProjectilePhysics(uniTrans));
 			projEnt.push_back(sProjEnt);
 			spriteMan->addEntity(sProjEnt);
 			
-			//Make AABB tests
-			flag1 = true;
-			
 			sProjEnt->physics->setAABB(sProjEnt->sprite->getLowX() + 0.06f, sProjEnt->sprite->getHighX() - 0.06f, sProjEnt->sprite->getLowY() + 0.06f, sProjEnt->sprite->getHighY() - 0.06f);
 
 			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		}
-		else if (time - lastShoot>1.0f){
-			//So it's not checked everytime.
-			flag1 = false;
-		}
-
-		if (flag1){
-			for (int j = 0; j < projEnt.size();j++)
+		
+		//Check collisions - Blast - Enemy
+		for (int j = 0; j < projEnt.size();j++)
 			for (int i = 0; i < spr2.size(); ++i)
 			if (projEnt[j]->physics->AABBvsAABB(EnEnt[i]->physics->getAABB())){
 				spriteMan->removeSprite(spr2[i], vertices, elements);
@@ -272,12 +265,12 @@ int main() {
 
 				spriteMan->removeSprite(projEnt[j]->sprite, vertices, elements);
 				projEnt.erase(projEnt.begin() + j);
+				blastLifeTime.erase(blastLifeTime.begin() + j);
 
 				spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 				glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 				break;
 			}
-		}
 
 		if (glfwGetKey(window, GLFW_KEY_LEFT)){
 			animManager->stopAnim("Idle");
@@ -298,6 +291,24 @@ int main() {
 
 		animManager->playActiveAnim(time, vertices);
 		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+
+		dt = time - lastFrame;
+		lastFrame = time;
+
+		bool blastDestroyed = false;
+		for (int i = 0; i < blastLifeTime.size(); i++){
+			blastLifeTime[i] += dt;
+			if (blastLifeTime[i] >= blastLife){
+				spriteMan->removeSprite(projEnt[i]->sprite, vertices, elements);
+				projEnt.erase(projEnt.begin() + i);
+				blastLifeTime.erase(blastLifeTime.begin() + i);
+				blastDestroyed = true;
+			}
+		}
+		if (blastDestroyed){
+			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+		}
 
 		spriteMan->drawAll(elements, ebo,shaderProgram,window,vertices,uniTrans,dt);
 	}
