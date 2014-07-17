@@ -5,7 +5,7 @@
 
 ProjectilePhysics::ProjectilePhysics(GLint uniTrans) :Physics(uniTrans){
 	trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	speed = 0.5f *3;
+	speed = 0.8f *3;
 }
 
 bool ProjectilePhysics::movement(GLFWwindow* window,float dt){

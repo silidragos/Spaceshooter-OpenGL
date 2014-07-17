@@ -108,3 +108,14 @@ void Sprite::setUV(vector<float> &mainVector, float lowX, float highX, float low
 	mainVector[pozInVectPrinc + 15 + 3] = lowX;
 	mainVector[pozInVectPrinc + 15 + 4] = lowY;
 }
+
+
+void Sprite::setInBackground(vector<float> &mainVector){
+	mainVector[pozInVectPrinc + 2] = -1.0f;
+
+	mainVector[pozInVectPrinc + 5 + 2] =-1.0f;
+
+	mainVector[pozInVectPrinc + 10 + 2] = -1.0f;
+
+	mainVector[pozInVectPrinc + 15 + 2] = -1.0f;
+}

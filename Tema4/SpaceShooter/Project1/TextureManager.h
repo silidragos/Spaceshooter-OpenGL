@@ -22,7 +22,7 @@ private:
 	void FlipTexture(unsigned char* image_data, int x, int y, int n);
 public:
 	TextureManager();
-	GLuint& addTexture(char* filename);
+	GLuint& addTexture(char* filename,char);
 	GLuint& addTexture(const char* filename,int& x,int&y);
 	GLuint& getTexture(char* filename);
 

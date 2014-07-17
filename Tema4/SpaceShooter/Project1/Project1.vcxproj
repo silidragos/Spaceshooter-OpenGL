@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="Anim.cpp" />
     <ClCompile Include="AnimManager.cpp" />
+    <ClCompile Include="CameraTransform.cpp" />
     <ClCompile Include="EnemyPhysics.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Loaded_Texture.cpp" />
@@ -33,6 +34,7 @@
   <ItemGroup>
     <ClInclude Include="Anim.h" />
     <ClInclude Include="AnimManager.h" />
+    <ClInclude Include="CameraTransform.h" />
     <ClInclude Include="EnemyPhysics.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Include.h" />

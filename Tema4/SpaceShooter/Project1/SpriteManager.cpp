@@ -2,6 +2,8 @@
 
 #include<iostream>
 #include<fstream>
+#include<glm/gtc/matrix_transform.hpp>
+#include<glm/gtc/type_ptr.hpp>
 
 
 GLuint SpriteManager::compileShaders(char* pixelShaders, char* vertexShaders){
@@ -52,7 +54,14 @@ void SpriteManager::addEntity(Entity* e){
 void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], GLuint& shaderProgram, GLFWwindow* window, vector<float>& vertices, GLint uniTrans,float dt){
 
 	for (int i = 0; i < elements.size(); ++i){
+		if (entities[i]->gotEntity())
    		entities[i]->physics->movement(window,dt);
+		else {
+			glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+
+		}
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
 		
 		glActiveTexture(GL_TEXTURE0 + i);

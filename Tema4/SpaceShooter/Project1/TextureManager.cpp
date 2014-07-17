@@ -37,7 +37,7 @@ void TextureManager::FlipTexture(unsigned char* image_data, int x, int y, int n)
 TextureManager::TextureManager(){
 	position = 0;
 }
-GLuint& TextureManager::addTexture(char* filename){
+GLuint& TextureManager::addTexture(char* filename,char wrap){
 	names[position] = filename;
 	glGenTextures(1, &textures[position]);
 
@@ -52,14 +52,23 @@ GLuint& TextureManager::addTexture(char* filename){
 	FlipTexture(image, x, y, n);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	if (wrap == 'c'){
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	}
+	else if (wrap = 'r'){
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	}
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	position++;
 	return textures[position-1];
 }
+
+
 GLuint& TextureManager::addTexture(const char* filename, int& x, int&y){
 	names[position] = filename;
 	glGenTextures(1, &textures[position]);
@@ -90,6 +99,6 @@ GLuint& TextureManager::getTexture(char* filename){
 			return textures[i];
 		}
 	}
-	return addTexture(filename);
+	return addTexture(filename,'c');
 
 }

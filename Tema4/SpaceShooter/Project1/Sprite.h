@@ -32,6 +32,8 @@ public:
 	float getHighY();
 	float getLowX();
 	float getLowY();
+
+	void setInBackground(vector<float> &mainVector);
 };
 
 #endif

@@ -14,6 +14,7 @@ public:
 	//methods
 public:
 	Entity(Sprite* s,Physics* p);
+	bool gotEntity();
 	~Entity(){
 		delete sprite;
 		delete physics;

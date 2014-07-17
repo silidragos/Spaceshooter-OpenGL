@@ -9,6 +9,7 @@
 #include"XML.h"
 #include"Anim.h"
 #include"AnimManager.h"
+#include"CameraTransform.h"
 
 #include<iostream>
 #include<fstream>
@@ -113,6 +114,13 @@ int main() {
 	spr2.resize(5);
 	EnEnt.resize(5);
 	
+	//Add background
+	Sprite* BG = new Sprite(-100.0f, 100.0f, -100.0f, 100.0f, vertices, elements);
+
+	Entity* BGEntity = new Entity(BG, NULL);
+	spriteMan->addSprite(BG);
+	spriteMan->addEntity(BGEntity);
+
 	//Creates Enemy ships Sprites
 	for (int i = 0; i < 5; ++i)
 	{
@@ -146,8 +154,6 @@ int main() {
 	GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
 	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
 
-
-
 	//Enemy Entities
 	srand(time(NULL));
 
@@ -165,17 +171,27 @@ int main() {
 	spriteMan->addEntity(playerEnt);
 	playerEnt->physics->setAABB(playerEnt->sprite->getLowX(), playerEnt->sprite->getHighX(), playerEnt->sprite->getLowY(), playerEnt->sprite->getHighY());
 
+	
+
 	//Add textures
 	TextureManager* t = new TextureManager();
-	GLuint enTex = t->getTexture("bug.png");
-	GLuint blastTex = t->getTexture("blast.png");
+	GLuint enTex = t->addTexture("bug.png",'c');
+	GLuint blastTex = t->addTexture("blast.png",'c');
+	GLuint bgTex = t->addTexture("stars.png",'r');
 	//Texturile trebuie afisate in ordinea in care sunt in elements!!!
+
 	for (int i = 0; i < 5; ++i){
 		spr2[i]->addTexture(enTex);
 	}
 
 	player->addTexture(t->getTexture("player.png"));
 
+	BG->addTexture(t->getTexture("stars.png"));
+
+	BG->setUV(vertices, 0.0f, 100.0f, 0.0f, 100.0f);
+	BG->setInBackground(vertices);
+
+	
 	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 
@@ -222,8 +238,13 @@ int main() {
 
 	//Check How much time a Blast should last
 	vector<float> blastLifeTime;
-	float blastLife = 2.0f;
+	float blastLife = 1.3f;
 	float dt;
+
+	float cameraPosX = 0.0f;
+	float cameraPosY = 0.0f;
+	float lastPosX=0.0f, lastPosY=0.0f;
+	bool shouldMove = false;
 
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window,GLFW_KEY_ESCAPE)){
 
@@ -316,17 +337,28 @@ int main() {
 
 
 		//Camera Projection/View
-		//Following camera?
-		/*
+
+	//LERP(should use constant timing)		
 		float pozX = playerEnt->physics->getPozX(playerEnt->sprite->getHighX(), playerEnt->sprite->getHighY());
 		float pozY = playerEnt->physics->getPozY(playerEnt->sprite->getHighX(), playerEnt->sprite->getHighY());
-		cout << pozX << " " << pozY << endl;
-		glm::mat4 proj = glm::ortho(-1.0f, 1.0f, -0.25f+ pozY, 1.75f + pozY, 0.0f, 100.0f);
-		*/
+		pozY += 0.75f;
+		if ((abs(pozX - lastPosX) > 0.3f || abs(pozY - lastPosY) > 0.3f)||shouldMove){
+			shouldMove = moveCameraTo(cameraPosX, cameraPosY, pozX, pozY);
+			lastPosX = pozX;
+			lastPosY = pozY;
+		}
 
+		glm::mat4 view = glm::lookAt(
+			glm::vec3(cameraPosX,cameraPosY, 2.0f),
+			glm::vec3(cameraPosX, cameraPosY, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f)
+			);
+		
 		glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
 
+
+		//Draw
 		spriteMan->drawAll(elements, ebo,shaderProgram,window,vertices,uniTrans,dt);
 	}
 
