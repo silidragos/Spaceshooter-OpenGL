@@ -40,6 +40,9 @@ bool Animatie::nextFrame(vector<float> &mainVector){
 		currentFrame++;
 		return true;
 	}
+	else if (!loop && currentFrame == (frames.size() - 1)){
+		return true;
+	}
 
 	isWorking = false;
 	return false;

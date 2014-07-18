@@ -39,20 +39,48 @@ GLuint compileShaders(char* pixelShaders, char* vertexShaders){
 	const GLchar* vertexSource = vertexSourceStr.c_str();
 	const GLchar* fragmentSource = fragmentSourceStr.c_str();
 
+	GLint Result = GL_FALSE;
+	int InfoLogLength;
+
+	printf("Compiling shader : %s\n", vertexShaders);
+
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexSource, NULL);
 	glCompileShader(vertexShader);
 
+	// Check Vertex Shader
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &Result);
+	glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &InfoLogLength);
+	std::vector<char> VertexShaderErrorMessage(InfoLogLength);
+	glGetShaderInfoLog(vertexShader, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
+	fprintf(stdout, "%s\n", &VertexShaderErrorMessage[0]);
+
+	printf("Compiling shader : %s\n", pixelShaders);
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
 	glCompileShader(fragmentShader);
 
+	// Check Fragment Shader
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &Result);
+	glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &InfoLogLength);
+	std::vector<char> FragmentShaderErrorMessage(InfoLogLength);
+	glGetShaderInfoLog(fragmentShader, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
+	fprintf(stdout, "%s\n", &FragmentShaderErrorMessage[0]);
+
+	printf("Linking program\n");
 	GLuint shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glBindFragDataLocation(shaderProgram, 0, "outColor");
 	glLinkProgram(shaderProgram);
 	glUseProgram(shaderProgram);
+
+	// Check the program
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &Result);
+	glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &InfoLogLength);
+	std::vector<char> ProgramErrorMessage(InfoLogLength+1);
+	glGetProgramInfoLog(shaderProgram, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+	fprintf(stdout, "%s\n", &ProgramErrorMessage[0]);
 
 	return shaderProgram;
 
@@ -108,6 +136,7 @@ int main() {
 
 	//Test -- Create new sprites
 	SpriteManager* spriteMan = new SpriteManager();
+	AnimManager* animManager = new AnimManager();
 
 	vector<Entity*> EnEnt;
 	vector<Sprite*> spr2;
@@ -167,7 +196,7 @@ int main() {
 	//Add player
 	Sprite* player = new Sprite(-0.1f, 0.1f, -1.0f, -0.8f, vertices, elements);
 	spriteMan->addSprite(player);
-	Entity* playerEnt = new Entity(player, new PlayerPhysics(uniTrans));
+	Entity* playerEnt = new Entity(player, new PlayerPhysics(uniTrans,animManager));
 	spriteMan->addEntity(playerEnt);
 	playerEnt->physics->setAABB(playerEnt->sprite->getLowX(), playerEnt->sprite->getHighX(), playerEnt->sprite->getLowY(), playerEnt->sprite->getHighY());
 
@@ -196,7 +225,6 @@ int main() {
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 
 	//Loading Animations
-	AnimManager* animManager = new AnimManager();
 	animManager->setTimePerFrame(0.2f);
 
 	vector<Dict_Entry*> loadedSprites;
@@ -209,15 +237,17 @@ int main() {
 
 	Animatie* animLeft = new Animatie();
 	animLeft->setSprite(player);
-	for (int i = 16; i < 31; ++i){
+	for (int i = 16; i < 18; ++i){
 		animLeft->addDictEntry(loadedSprites[i]);
 	}
+	animLeft->setLoop(false);
 
 	Animatie* animRight = new Animatie();
 	animRight->setSprite(player);
-	for (int i = 32; i < 42; ++i){
+	for (int i = 18; i < 20; ++i){
 		animRight->addDictEntry(loadedSprites[i]);
 	}
+	animRight->setLoop(false);
 
 	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 
@@ -297,21 +327,6 @@ int main() {
 				break;
 			}
 
-		if (glfwGetKey(window, GLFW_KEY_LEFT)){
-			animManager->stopAnim("Idle");
-			animManager->stopAnim("Right");
-			animManager->startAnim("Left");
-		}
-		else if (glfwGetKey(window, GLFW_KEY_RIGHT)){
-			animManager->stopAnim("Idle");
-			animManager->stopAnim("Left");
-			animManager->startAnim("Right");
-		}
-		else{
-			animManager->stopAnim("Left");
-			animManager->stopAnim("Right");
-			animManager->startAnim("Idle");
-		}
 		
 
 		animManager->playActiveAnim(time, vertices);
