@@ -19,7 +19,6 @@ private:
 
 	int position;
 
-	void FlipTexture(unsigned char* image_data, int x, int y, int n);
 public:
 	TextureManager();
 	GLuint& addTexture(char* filename,char);

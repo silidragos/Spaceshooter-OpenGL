@@ -57,7 +57,7 @@ void SpriteManager::drawAll(vector<vector<GLuint>>& elements, GLuint ebo[NMAX], 
 		if (entities[i]->gotEntity())
    		entities[i]->physics->movement(window,dt);
 		else {
-			glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+ 			glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 
 		}

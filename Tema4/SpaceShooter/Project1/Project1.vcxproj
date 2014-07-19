@@ -24,11 +24,15 @@
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteManager.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="Text2D.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="utils.cpp" />
     <ClCompile Include="XML.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="pixelShader.glsl" />
+    <None Include="TextPixelShader.glsl" />
+    <None Include="TextVertexShader.glsl" />
     <None Include="vertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
@@ -45,7 +49,9 @@
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteManager.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Text2D.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="utils.h" />
     <ClInclude Include="XML.h" />
   </ItemGroup>
   <ItemGroup>

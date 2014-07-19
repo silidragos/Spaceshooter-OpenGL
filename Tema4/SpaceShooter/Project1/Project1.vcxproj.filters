@@ -28,13 +28,13 @@
     <Filter Include="Header Files\Physics\Types">
       <UniqueIdentifier>{eb92eb9d-3b49-4324-9e13-ab9ce61071f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{a9f51a23-393c-4304-977a-a31b5f2c3680}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program1.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stb_image.cpp">
-      <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="SpriteManager.cpp">
       <Filter>Header Files\Sprites</Filter>
@@ -60,9 +60,6 @@
     <ClCompile Include="ProjectilePhysics.cpp">
       <Filter>Header Files\Physics\Types</Filter>
     </ClCompile>
-    <ClCompile Include="XML.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="Loaded_Texture.cpp">
       <Filter>Header Files\Sprites</Filter>
     </ClCompile>
@@ -75,6 +72,18 @@
     <ClCompile Include="CameraTransform.cpp">
       <Filter>Header Files\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="stb_image.cpp">
+      <Filter>Header Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="XML.cpp">
+      <Filter>Header Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
+      <Filter>Header Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Text2D.cpp">
+      <Filter>Header Files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="pixelShader.glsl">
@@ -83,11 +92,14 @@
     <None Include="vertexShader.glsl">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="TextPixelShader.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="TextVertexShader.glsl">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SpriteManager.h">
       <Filter>Header Files\Sprites</Filter>
     </ClInclude>
@@ -115,9 +127,6 @@
     <ClInclude Include="Loaded_Texture.h">
       <Filter>Header Files\Sprites</Filter>
     </ClInclude>
-    <ClInclude Include="XML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Anim.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -129,6 +138,18 @@
     </ClInclude>
     <ClInclude Include="CameraTransform.h">
       <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="XML.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Text2D.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

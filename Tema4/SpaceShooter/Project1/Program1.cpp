@@ -11,80 +11,86 @@
 #include"AnimManager.h"
 #include"CameraTransform.h"
 
+#include"utils.h"
+#include"Text2D.h"
+
 #include<iostream>
-#include<fstream>
 #include"glm\gtc\matrix_transform.hpp"
 #include"glm\gtc\type_ptr.hpp"
 #include<time.h>
 
 
-string LoadFileToString(const char* filepath){
-	string fileData;
-	ifstream stream(filepath, ios::in);
+vector<float> vertices;
+vector<vector<GLuint>> elements;
 
-	if (stream.is_open()){
-		string line = "";
-		while (getline(stream, line)){
-			fileData += '\n' + line;
-		}
-		stream.close();
+GLuint vbo;
+GLuint ebo[NMAX];
+
+GLuint shaderProgram;
+
+SpriteManager* spriteMan = new SpriteManager();
+AnimManager* animManager = new AnimManager();
+
+GLuint uniTrans;
+
+
+
+vector<Entity*> EnEnt;
+vector<Sprite*> spr2;
+vector<Sprite*> blast;
+vector<Entity*> projEnt;
+
+vector<float> blastLifeTime;
+float blastLife = 1.3f;
+
+int scor = 0;
+
+glm::mat4 trans;
+
+
+void update(float dt){
+
+	//Check collisions - Blast - Enemy
+	for (int j = 0; j < projEnt.size(); j++)
+	for (int i = 0; i < spr2.size(); ++i)
+	if (projEnt[j]->physics->AABBvsAABB(EnEnt[i]->physics->getAABB())){
+		spriteMan->removeSprite(spr2[i], vertices, elements);
+		spr2.erase(spr2.begin() + i);
+		EnEnt.erase(EnEnt.begin() + i);
+
+		spriteMan->removeSprite(projEnt[j]->sprite, vertices, elements);
+		projEnt.erase(projEnt.begin() + j);
+		blastLifeTime.erase(blastLifeTime.begin() + j);
+
+		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+		glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+
+		scor++;
+		break;
 	}
 
-	return fileData;
-}
-GLuint compileShaders(char* pixelShaders, char* vertexShaders){
-
-	string vertexSourceStr = LoadFileToString(vertexShaders);
-	string fragmentSourceStr = LoadFileToString(pixelShaders);
-	const GLchar* vertexSource = vertexSourceStr.c_str();
-	const GLchar* fragmentSource = fragmentSourceStr.c_str();
-
-	GLint Result = GL_FALSE;
-	int InfoLogLength;
-
-	printf("Compiling shader : %s\n", vertexShaders);
-
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexSource, NULL);
-	glCompileShader(vertexShader);
-
-	// Check Vertex Shader
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	std::vector<char> VertexShaderErrorMessage(InfoLogLength);
-	glGetShaderInfoLog(vertexShader, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-	fprintf(stdout, "%s\n", &VertexShaderErrorMessage[0]);
-
-	printf("Compiling shader : %s\n", pixelShaders);
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-	glCompileShader(fragmentShader);
-
-	// Check Fragment Shader
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	std::vector<char> FragmentShaderErrorMessage(InfoLogLength);
-	glGetShaderInfoLog(fragmentShader, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-	fprintf(stdout, "%s\n", &FragmentShaderErrorMessage[0]);
-
-	printf("Linking program\n");
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glBindFragDataLocation(shaderProgram, 0, "outColor");
-	glLinkProgram(shaderProgram);
-	glUseProgram(shaderProgram);
-
-	// Check the program
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &Result);
-	glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	std::vector<char> ProgramErrorMessage(InfoLogLength+1);
-	glGetProgramInfoLog(shaderProgram, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-	fprintf(stdout, "%s\n", &ProgramErrorMessage[0]);
-
-	return shaderProgram;
+	bool blastDestroyed = false;
+	for (int i = 0; i < blastLifeTime.size(); i++){
+		blastLifeTime[i] += dt;
+		if (blastLifeTime[i] >= blastLife){
+			spriteMan->removeSprite(projEnt[i]->sprite, vertices, elements);
+			projEnt.erase(projEnt.begin() + i);
+			blastLifeTime.erase(blastLifeTime.begin() + i);
+			blastDestroyed = true;
+		}
+	}
+	if (blastDestroyed){
+		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+		glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+	}
 
 }
+
+void update(){
+
+
+}
+
 int main() {
 
 	glfwInit();
@@ -126,20 +132,11 @@ int main() {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	GLuint vbo;
 	glGenBuffers(1, &vbo);
-	vector<float> vertices;
 	
 
-	GLuint ebo[NMAX];
-	vector<vector<GLuint>> elements;
-
 	//Test -- Create new sprites
-	SpriteManager* spriteMan = new SpriteManager();
-	AnimManager* animManager = new AnimManager();
-
-	vector<Entity*> EnEnt;
-	vector<Sprite*> spr2;
+	
 	spr2.resize(5);
 	EnEnt.resize(5);
 	
@@ -159,12 +156,10 @@ int main() {
 
 	//EndTest
 
-	GLuint shaderProgram = compileShaders("pixelShader.glsl", "vertexShader.glsl");
-
-	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+	shaderProgram = compileShaders( "pixelShader.glsl", "vertexShader.glsl");
 
 	//Translations
-	glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	GLint uniTrans = glGetUniformLocation(shaderProgram, "trans");
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 
@@ -207,6 +202,7 @@ int main() {
 	GLuint enTex = t->addTexture("bug.png",'c');
 	GLuint blastTex = t->addTexture("blast.png",'c');
 	GLuint bgTex = t->addTexture("stars.png",'r');
+	GLuint fontTex = t->addTexture("Font.png", 'c');
 	//Texturile trebuie afisate in ordinea in care sunt in elements!!!
 
 	for (int i = 0; i < 5; ++i){
@@ -219,6 +215,8 @@ int main() {
 
 	BG->setUV(vertices, 0.0f, 100.0f, 0.0f, 100.0f);
 	BG->setInBackground(vertices);
+
+	initializeText();
 
 	
 	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
@@ -259,16 +257,12 @@ int main() {
 
 
 	//Variables used in while
-	vector<Sprite*> blast;
-	vector<Entity*> projEnt;
 
 	GLfloat lastShoot = 0.0f;
 	float lastAnim = 0.0f;
 	float lastFrame = 0.0f;
 
 	//Check How much time a Blast should last
-	vector<float> blastLifeTime;
-	float blastLife = 1.3f;
 	float dt;
 
 	float cameraPosX = 0.0f;
@@ -285,6 +279,8 @@ int main() {
 
 		GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
 
+		dt = time - lastFrame;
+		lastFrame = time;
 
 		//Create Projectile
 		if (glfwGetKey(window, GLFW_KEY_SPACE) && time-lastShoot>0.2f){
@@ -310,45 +306,10 @@ int main() {
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 		}
 		
-		//Check collisions - Blast - Enemy
-		for (int j = 0; j < projEnt.size();j++)
-			for (int i = 0; i < spr2.size(); ++i)
-			if (projEnt[j]->physics->AABBvsAABB(EnEnt[i]->physics->getAABB())){
-				spriteMan->removeSprite(spr2[i], vertices, elements);
-				spr2.erase(spr2.begin() + i);
-				EnEnt.erase(EnEnt.begin() + i);
-
-				spriteMan->removeSprite(projEnt[j]->sprite, vertices, elements);
-				projEnt.erase(projEnt.begin() + j);
-				blastLifeTime.erase(blastLifeTime.begin() + j);
-
-				spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
-				glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
-				break;
-			}
-
-		
+		update(dt);
 
 		animManager->playActiveAnim(time, vertices);
 		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
-
-		dt = time - lastFrame;
-		lastFrame = time;
-
-		bool blastDestroyed = false;
-		for (int i = 0; i < blastLifeTime.size(); i++){
-			blastLifeTime[i] += dt;
-			if (blastLifeTime[i] >= blastLife){
-				spriteMan->removeSprite(projEnt[i]->sprite, vertices, elements);
-				projEnt.erase(projEnt.begin() + i);
-				blastLifeTime.erase(blastLifeTime.begin() + i);
-				blastDestroyed = true;
-			}
-		}
-		if (blastDestroyed){
-			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
-			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
-		}
 
 
 		//Camera Projection/View
@@ -375,11 +336,19 @@ int main() {
 
 		//Draw
 		spriteMan->drawAll(elements, ebo,shaderProgram,window,vertices,uniTrans,dt);
+		
+		char text[256];
+		sprintf(text, "Score : %i", scor);
+		DrawText(text, fontTex, 10, 550, 20);
+
+		sprintf(text, "Time : %.1f sec", glfwGetTime());
+		DrawText(text, fontTex, 10, 10, 20);
 	}
 
 	//Free memory
 	delete playerEnt;
 	for (int i = 0; i < EnEnt.size(); ++i) delete EnEnt[i];
+	
 	glDeleteProgram(shaderProgram);
 	glDeleteBuffers(1, &vbo);
 	glDeleteBuffers(elements.size(), ebo);

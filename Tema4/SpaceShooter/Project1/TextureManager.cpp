@@ -1,6 +1,5 @@
 #include"TextureManager.h"
 
-
 #include "stb_image.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -9,30 +8,9 @@
 #include<iostream>
 #include<fstream>
 
-
 #include<time.h>
 
-void TextureManager::FlipTexture(unsigned char* image_data, int x, int y, int n)
-{
-	//flip texture
-	int width_in_bytes = x * 4;
-	unsigned char *top = NULL;
-	unsigned char *bottom = NULL;
-	unsigned char temp = 0;
-	int half_height = y / 2;
-
-	for (int row = 0; row < half_height; row++) {
-		top = image_data + row * width_in_bytes;
-		bottom = image_data + (y - row - 1) * width_in_bytes;
-		for (int col = 0; col < width_in_bytes; col++) {
-			temp = *top;
-			*top = *bottom;
-			*bottom = temp;
-			top++;
-			bottom++;
-		}
-	}
-}
+#include "utils.h"
 
 TextureManager::TextureManager(){
 	position = 0;

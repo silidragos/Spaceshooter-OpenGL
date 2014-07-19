@@ -69,6 +69,7 @@ bool PlayerPhysics::movement(GLFWwindow* window,float dt){
 		ok = true;
 	}
 	if (ok == true){
+	//	dir = glm::normalize(dir)*dt*speed;
 		trans = trans*glm::translate(glm::mat4(1.0f), dir);
 		glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 
