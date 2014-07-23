@@ -87,6 +87,9 @@
     <ClCompile Include="pauseGUI.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Options.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="pixelShader.glsl">
@@ -157,6 +160,9 @@
     <ClInclude Include="pauseGUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="bug.png">
@@ -165,5 +171,10 @@
     <Image Include="blast.png">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="options.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

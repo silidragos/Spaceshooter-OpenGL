@@ -14,6 +14,8 @@
 #include"utils.h"
 #include"Text2D.h"
 #include"pauseGUI.h"
+#include"Options.h"
+
 
 #include<iostream>
 #include"glm\gtc\matrix_transform.hpp"
@@ -33,19 +35,16 @@ SpriteManager* spriteMan = new SpriteManager();
 AnimManager* animManager = new AnimManager();
 
 GLuint uniTrans;
-
 vector<Entity*> EnEnt;
 vector<Sprite*> spr2;
 vector<Sprite*> blast;
 vector<Entity*> projEnt;
+GLuint enBlastTex;
 
 vector<float> blastLifeTime;
 float blastLife = 1.3f;
-
 int scor = 0;
-
 glm::mat4 trans;
-
 
 void update(float dt){
 
@@ -68,6 +67,7 @@ void update(float dt){
 		break;
 	}
 
+	//Destroy old Blasts
 	bool blastDestroyed = false;
 	for (int i = 0; i < blastLifeTime.size(); i++){
 		blastLifeTime[i] += dt;
@@ -82,6 +82,8 @@ void update(float dt){
 		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 		glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 	}
+
+	
 
 }
 
@@ -101,8 +103,14 @@ int main() {
 
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-	const int windowWidth = 800;
-	const int windowHeight = 600;
+	//Read options from XML
+	loadOptions("options.xml");
+
+	int windowWidth = 800;
+	int windowHeight = 600;
+
+	getResolution(windowWidth, windowHeight);
+
 	GLFWwindow* window = glfwCreateWindow(windowWidth,windowHeight, "OpenGL", nullptr, nullptr);
 
 	if (!window){
@@ -202,6 +210,7 @@ int main() {
 	GLuint blastTex = t->addTexture("blast.png",'c');
 	GLuint bgTex = t->addTexture("stars.png",'r');
 	GLuint fontTex = t->addTexture("Font.png", 'c');
+	enBlastTex = t->addTexture("BugBlast.png", 'c');
 
 	GLuint newGameTex = t->addTexture("NewGame.png", 'c');
 	GLuint resumeTex = t->addTexture("Resume.png", 'c');
@@ -213,7 +222,9 @@ int main() {
 		spr2[i]->addTexture(enTex);
 	}
 
-	player->addTexture(t->getTexture("player.png"));
+	char* playerImg = new char[32];
+	strcpy(playerImg,getPlayerImg().c_str());
+	player->addTexture(t->getTexture(playerImg));
 
 	BG->addTexture(t->getTexture("stars.png"));
 
@@ -363,15 +374,49 @@ int main() {
 			blast.push_back(sBlast);
 			blastLifeTime.push_back(0.0f);
 
-
-			Entity* sProjEnt = new Entity(sBlast, new ProjectilePhysics(uniTrans));
+			ProjectilePhysics* projPhy = new ProjectilePhysics(uniTrans);
+			Entity* sProjEnt = new Entity(sBlast,projPhy);
 			projEnt.push_back(sProjEnt);
+			projPhy->setDir(0.0f, 1.0f, 0.0f);
+
 			spriteMan->addEntity(sProjEnt);
 			
 			sProjEnt->physics->setAABB(sProjEnt->sprite->getLowX() + 0.06f, sProjEnt->sprite->getHighX() - 0.06f, sProjEnt->sprite->getLowY() + 0.06f, sProjEnt->sprite->getHighY() - 0.06f);
 
 			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+		}
+
+		//Enemy shooting
+		//Enemy shoot
+		int shootingPause = 1.0f;
+		if (glfwGetTime() - lastShoot > shootingPause && spr2.size()>0){
+
+			int enemyShooting = rand() % spr2.size();
+			cout << enemyShooting << " -- bang!\n";
+
+			Sprite* sBlast = new Sprite(0.0f, 0.1f, 0.0f, 0.1f,
+				vertices, elements);
+			sBlast->addTexture(enBlastTex);
+			spriteMan->addSprite(sBlast);
+
+			//blast.push_back(sBlast);
+			//blastLifeTime.push_back(0.0f);
+
+			ProjectilePhysics* projPhy = new ProjectilePhysics(uniTrans);
+			Entity* sProjEnt = new Entity(sBlast, projPhy);
+			//projEnt.push_back(sProjEnt);
+			projPhy->setDir(0.0f, -1.0f, 0.0f);
+			projPhy->setSpeed(0.8f);
+
+			spriteMan->addEntity(sProjEnt);
+
+			sProjEnt->physics->setAABB(sProjEnt->sprite->getLowX() + 0.06f, sProjEnt->sprite->getHighX() - 0.06f, sProjEnt->sprite->getLowY() + 0.06f, sProjEnt->sprite->getHighY() - 0.06f);
+
+			spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+			glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+
+			lastShoot = glfwGetTime();
 		}
 		
 		update(dt);

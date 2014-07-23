@@ -17,6 +17,7 @@
     <ClCompile Include="EnemyPhysics.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Loaded_Texture.cpp" />
+    <ClCompile Include="Options.cpp" />
     <ClCompile Include="pauseGUI.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PlayerPhysics.cpp" />
@@ -44,6 +45,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Include.h" />
     <ClInclude Include="Loaded_Texture.h" />
+    <ClInclude Include="Options.h" />
     <ClInclude Include="pauseGUI.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="PlayerPhysics.h" />
@@ -59,6 +61,9 @@
   <ItemGroup>
     <Image Include="blast.png" />
     <Image Include="bug.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="options.xml" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{63AC2AC9-4451-40D1-B707-080EEB52F9E1}</ProjectGuid>

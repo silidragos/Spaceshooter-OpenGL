@@ -9,8 +9,18 @@ ProjectilePhysics::ProjectilePhysics(GLint uniTrans) :Physics(uniTrans){
 }
 
 bool ProjectilePhysics::movement(GLFWwindow* window,float dt){
-	trans *= glm::translate(glm::mat4(1.0f),dt*glm::vec3(0.0, speed, 0.0f));
+	trans *= glm::translate(glm::mat4(1.0f),dt*dir*speed);
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 	return true;
+}
+
+void ProjectilePhysics::setDir(float x, float y, float z){
+	dir.x = x;
+	dir.y = y;
+	dir.z = z;
+}
+
+void ProjectilePhysics::setSpeed(float s){
+	speed = s;
 }
 
