@@ -35,13 +35,16 @@ SpriteManager* spriteMan = new SpriteManager();
 AnimManager* animManager = new AnimManager();
 
 GLuint uniTrans;
+Entity* playerEnt;
 vector<Entity*> EnEnt;
 vector<Sprite*> spr2;
 vector<Sprite*> blast;
 vector<Entity*> projEnt;
+vector<Entity*> enemyProjEnt;
 GLuint enBlastTex;
 
 vector<float> blastLifeTime;
+vector<float> enemyBlastLifeTime;
 float blastLife = 1.3f;
 int scor = 0;
 glm::mat4 trans;
@@ -66,6 +69,21 @@ void update(float dt){
 		scor++;
 		break;
 	}
+	//Check collisions - Blast - Player
+	for (int j = 0; j < enemyProjEnt.size(); j++)
+	if (enemyProjEnt[j]->physics->AABBvsAABB(playerEnt->physics->getAABB())){
+		
+		spriteMan->removeSprite(enemyProjEnt[j]->sprite, vertices, elements);
+		enemyProjEnt.erase(enemyProjEnt.begin() + j);
+		enemyBlastLifeTime.erase(enemyBlastLifeTime.begin() + j);
+
+		spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
+		glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+
+		scor--;
+		break;
+	}
+
 
 	//Destroy old Blasts
 	bool blastDestroyed = false;
@@ -75,6 +93,15 @@ void update(float dt){
 			spriteMan->removeSprite(projEnt[i]->sprite, vertices, elements);
 			projEnt.erase(projEnt.begin() + i);
 			blastLifeTime.erase(blastLifeTime.begin() + i);
+			blastDestroyed = true;
+		}
+	}
+	for (int i = 0; i < enemyBlastLifeTime.size(); i++){
+		enemyBlastLifeTime[i] += dt;
+		if (enemyBlastLifeTime[i] >= blastLife+1.0f){
+			spriteMan->removeSprite(enemyProjEnt[i]->sprite, vertices, elements);
+			enemyProjEnt.erase(enemyProjEnt.begin() + i);
+			enemyBlastLifeTime.erase(enemyBlastLifeTime.begin() + i);
 			blastDestroyed = true;
 		}
 	}
@@ -200,7 +227,7 @@ int main() {
 	//Add player
 	Sprite* player = new Sprite(-0.1f, 0.1f, -1.0f, -0.8f, vertices, elements);
 	spriteMan->addSprite(player);
-	Entity* playerEnt = new Entity(player, new PlayerPhysics(uniTrans,animManager));
+	playerEnt = new Entity(player, new PlayerPhysics(uniTrans,animManager));
 	spriteMan->addEntity(playerEnt);
 	playerEnt->physics->setAABB(playerEnt->sprite->getLowX(), playerEnt->sprite->getHighX(), playerEnt->sprite->getLowY(), playerEnt->sprite->getHighY());
 
@@ -395,17 +422,20 @@ int main() {
 			int enemyShooting = rand() % spr2.size();
 			cout << enemyShooting << " -- bang!\n";
 
-			Sprite* sBlast = new Sprite(0.0f, 0.1f, 0.0f, 0.1f,
+			Sprite* sBlast = new Sprite(EnEnt[enemyShooting]->physics->getPozX(EnEnt[enemyShooting]->sprite->getLowX(), EnEnt[enemyShooting]->sprite->getLowY()) - 0.1f,
+				EnEnt[enemyShooting]->physics->getPozX(EnEnt[enemyShooting]->sprite->getLowX(), EnEnt[enemyShooting]->sprite->getLowY()),
+				EnEnt[enemyShooting]->physics->getPozY(EnEnt[enemyShooting]->sprite->getLowX(), EnEnt[enemyShooting]->sprite->getLowY()) - 0.05f,
+				EnEnt[enemyShooting]->physics->getPozY(EnEnt[enemyShooting]->sprite->getLowX(), EnEnt[enemyShooting]->sprite->getLowY()) + 0.05f,
 				vertices, elements);
 			sBlast->addTexture(enBlastTex);
 			spriteMan->addSprite(sBlast);
 
 			//blast.push_back(sBlast);
-			//blastLifeTime.push_back(0.0f);
+			enemyBlastLifeTime.push_back(0.0f);
 
 			ProjectilePhysics* projPhy = new ProjectilePhysics(uniTrans);
 			Entity* sProjEnt = new Entity(sBlast, projPhy);
-			//projEnt.push_back(sProjEnt);
+			enemyProjEnt.push_back(sProjEnt);
 			projPhy->setDir(0.0f, -1.0f, 0.0f);
 			projPhy->setSpeed(0.8f);
 

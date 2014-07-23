@@ -18,8 +18,6 @@ EnemyPhysics::EnemyPhysics(GLint uniTrans,int t) :Physics(uniTrans){
 }
 
 bool EnemyPhysics::movement(GLFWwindow* window,float dt){
-	int x;
-	int y;
 	bool ok = true;
 	speed = 1;
 	GLfloat time = (GLfloat)clock() / (GLfloat)CLOCKS_PER_SEC;
@@ -40,4 +38,11 @@ bool EnemyPhysics::movement(GLFWwindow* window,float dt){
 	}
 
 	return ok;
+}
+
+float EnemyPhysics::getPozX(float highX, float highY){
+	return (trans*glm::vec4(highX, highY, 1.0f, 1.0f)).x;
+}
+float EnemyPhysics::getPozY(float highX, float highY){
+	return (trans*glm::vec4(highX, highY, 1.0f, 1.0f)).y;
 }
