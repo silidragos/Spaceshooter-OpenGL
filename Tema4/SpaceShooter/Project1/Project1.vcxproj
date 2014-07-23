@@ -17,6 +17,7 @@
     <ClCompile Include="EnemyPhysics.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Loaded_Texture.cpp" />
+    <ClCompile Include="pauseGUI.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PlayerPhysics.cpp" />
     <ClCompile Include="Program1.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Include.h" />
     <ClInclude Include="Loaded_Texture.h" />
+    <ClInclude Include="pauseGUI.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="PlayerPhysics.h" />
     <ClInclude Include="ProjectilePhysics.h" />

@@ -84,6 +84,9 @@
     <ClCompile Include="Text2D.cpp">
       <Filter>Header Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="pauseGUI.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="pixelShader.glsl">
@@ -150,6 +153,9 @@
     </ClInclude>
     <ClInclude Include="Text2D.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="pauseGUI.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

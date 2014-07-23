@@ -13,6 +13,7 @@
 
 #include"utils.h"
 #include"Text2D.h"
+#include"pauseGUI.h"
 
 #include<iostream>
 #include"glm\gtc\matrix_transform.hpp"
@@ -32,8 +33,6 @@ SpriteManager* spriteMan = new SpriteManager();
 AnimManager* animManager = new AnimManager();
 
 GLuint uniTrans;
-
-
 
 vector<Entity*> EnEnt;
 vector<Sprite*> spr2;
@@ -102,7 +101,9 @@ int main() {
 
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", nullptr, nullptr);
+	const int windowWidth = 800;
+	const int windowHeight = 600;
+	GLFWwindow* window = glfwCreateWindow(windowWidth,windowHeight, "OpenGL", nullptr, nullptr);
 
 	if (!window){
 		fprintf(stderr, "Window couldn't be created!\n");
@@ -126,7 +127,7 @@ int main() {
 	//Enable alpha channel
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 	glEnable(GL_BLEND);  
-	glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
@@ -195,14 +196,17 @@ int main() {
 	spriteMan->addEntity(playerEnt);
 	playerEnt->physics->setAABB(playerEnt->sprite->getLowX(), playerEnt->sprite->getHighX(), playerEnt->sprite->getLowY(), playerEnt->sprite->getHighY());
 
-	
-
 	//Add textures
 	TextureManager* t = new TextureManager();
 	GLuint enTex = t->addTexture("bug.png",'c');
 	GLuint blastTex = t->addTexture("blast.png",'c');
 	GLuint bgTex = t->addTexture("stars.png",'r');
 	GLuint fontTex = t->addTexture("Font.png", 'c');
+
+	GLuint newGameTex = t->addTexture("NewGame.png", 'c');
+	GLuint resumeTex = t->addTexture("Resume.png", 'c');
+	GLuint optionsTex = t->addTexture("Options.png", 'c');
+	GLuint exitTex = t->addTexture("Exit.png", 'c');
 	//Texturile trebuie afisate in ordinea in care sunt in elements!!!
 
 	for (int i = 0; i < 5; ++i){
@@ -216,9 +220,18 @@ int main() {
 	BG->setUV(vertices, 0.0f, 100.0f, 0.0f, 100.0f);
 	BG->setInBackground(vertices);
 
-	initializeText();
 
-	
+	//Initialize stuff
+	initializeText(windowWidth,windowHeight);
+	initPauseGUI(windowWidth,windowHeight);
+
+	float propHeight = windowHeight / 600.0f;
+	float propWidth = windowWidth / 800.0f;
+	addGUIAABB(windowHeight,300*propHeight, 450*propWidth, 200, 50);
+	addGUIAABB(windowHeight, 300 * propHeight, 375 * propWidth, 200, 50);
+	addGUIAABB(windowHeight, 300 * propHeight, 300 * propWidth, 200, 50);
+
+
 	spriteMan->reGenBuffers(vbo, ebo, elements, vertices, shaderProgram);
 	glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 
@@ -269,8 +282,15 @@ int main() {
 	float cameraPosY = 0.0f;
 	float lastPosX=0.0f, lastPosY=0.0f;
 	bool shouldMove = false;
+	bool isPause = true;
+	bool isEscPressed = false;
 
-	while (!glfwWindowShouldClose(window) && !glfwGetKey(window,GLFW_KEY_ESCAPE)){
+	GLuint firstButTex = newGameTex;
+
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_FALSE);
+
+
+	while (!glfwWindowShouldClose(window)){
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -281,6 +301,54 @@ int main() {
 
 		dt = time - lastFrame;
 		lastFrame = time;
+
+		if ((glfwGetKey(window, GLFW_KEY_ESCAPE)==GLFW_PRESS && isPause)){
+			isPause = false;
+			firstButTex = resumeTex;
+			continue;
+		}
+		else if ((glfwGetKey(window, GLFW_KEY_ESCAPE)==GLFW_PRESS &&!isPause) || isPause){
+			if (!isPause){
+				isPause = true;
+				}
+			char text[256];
+			sprintf_s(text, "Space shooter!!");
+			DrawText(text, fontTex, 125 * propHeight, 550 * propHeight, 40);
+
+			drawGUI(firstButTex, 300 * propHeight, 450 * propWidth, 200, 50);
+			drawGUI(optionsTex, 300 * propHeight, 375 * propWidth, 200, 50);
+			drawGUI(exitTex, 300 * propHeight, 300*propWidth, 200, 50);
+
+			double xpos, ypos;
+			glfwGetCursorPos(window, &xpos, &ypos);
+			
+
+			bool shouldExit = false;
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1)){
+				switch (CheckClicks(window)){
+				case(0) : {
+							  //Resume
+							  isPause = false;
+				}
+					break;
+				case(1) : {
+							  //Options
+
+				}
+					break;
+				case(2) : {
+							  //Exit
+							  shouldExit = true;
+				}
+					break;
+				default:{
+							//Bad Click
+				}
+				}
+			}
+			if (shouldExit) break;
+			continue;
+		}
 
 		//Create Projectile
 		if (glfwGetKey(window, GLFW_KEY_SPACE) && time-lastShoot>0.2f){
@@ -338,10 +406,10 @@ int main() {
 		spriteMan->drawAll(elements, ebo,shaderProgram,window,vertices,uniTrans,dt);
 		
 		char text[256];
-		sprintf(text, "Score : %i", scor);
-		DrawText(text, fontTex, 10, 550, 20);
+		sprintf_s(text, "Score : %i", scor);
+		DrawText(text, fontTex, 10, windowHeight-50, 20);
 
-		sprintf(text, "Time : %.1f sec", glfwGetTime());
+		sprintf_s(text, "Time : %.1f sec", glfwGetTime());
 		DrawText(text, fontTex, 10, 10, 20);
 	}
 

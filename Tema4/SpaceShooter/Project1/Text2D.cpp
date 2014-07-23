@@ -13,8 +13,14 @@ unsigned int Text2DUVBufferID;
 unsigned int Text2DTextureID;
 unsigned int Text2DShaderID;
 unsigned int Text2DUniformID;
+unsigned int Text2DresID;
 
-void initializeText(){
+float screenWidth, screenHeight;
+
+void initializeText(int width,int height){
+	
+	screenWidth = width;
+	screenHeight = height;
 
 	// Initialize VBO
 	glGenBuffers(1, &Text2DVertexBufferID);
@@ -25,6 +31,8 @@ void initializeText(){
 
 	// Initialize uniforms' IDs
 	Text2DUniformID = glGetUniformLocation(Text2DShaderID, "basic_texture");
+
+	Text2DresID = glGetUniformLocation(Text2DShaderID, "resolution");
 
 
 }
@@ -80,6 +88,8 @@ void DrawText(char* text, GLuint& textureID,float x,float y, float size){
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	// Set our "myTextureSampler" sampler to user Texture Unit 0
 	glUniform1i(Text2DUniformID, 0);
+	//Set resolution
+	glUniform2f(Text2DresID, screenWidth, screenHeight);
 
 	// 1rst attribute buffer : vertices
 	glEnableVertexAttribArray(0);
