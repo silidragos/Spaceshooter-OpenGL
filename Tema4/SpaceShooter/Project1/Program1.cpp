@@ -340,15 +340,23 @@ int main() {
 		dt = time - lastFrame;
 		lastFrame = time;
 
-		if ((glfwGetKey(window, GLFW_KEY_ESCAPE)==GLFW_PRESS && isPause)){
+		if ((glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS) && isEscPressed) {
+			isEscPressed = false;
+			cout << "false\n";
+		}
+
+		if ((glfwGetKey(window, GLFW_KEY_ESCAPE)==GLFW_PRESS && !isEscPressed) && isPause){
 			isPause = false;
-			firstButTex = resumeTex;
+			isEscPressed = true;
+
 			continue;
 		}
-		else if ((glfwGetKey(window, GLFW_KEY_ESCAPE)==GLFW_PRESS &&!isPause) || isPause){
-			if (!isPause){
-				isPause = true;
-				}
+		else if ((glfwGetKey(window, GLFW_KEY_ESCAPE)==GLFW_PRESS && !isEscPressed) || isPause){
+			isPause = true;
+
+			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+			isEscPressed = true;
+
 			char text[256];
 			sprintf_s(text, "Space shooter!!");
 			DrawText(text, fontTex, 125 * propHeight, 550 * propHeight, 40);
@@ -367,6 +375,7 @@ int main() {
 				case(0) : {
 							  //Resume
 							  isPause = false;
+							  firstButTex = resumeTex;
 				}
 					break;
 				case(1) : {

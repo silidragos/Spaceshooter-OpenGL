@@ -1,0 +1,5 @@
+<space_shooter version="1.0">
+	<resolution width="800" height="600"/>
+	<player_skin img="player.png" xml="player.xml"/>
+</space_shooter>
+
