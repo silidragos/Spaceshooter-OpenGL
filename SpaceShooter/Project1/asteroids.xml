@@ -1,0 +1,12 @@
+<TextureAtlas imagePath="asteroids.png">
+	<SubTexture name="slice01_01.png" x="124" y="359" width="116" height="124"/>
+	<SubTexture name="slice02_02.png" x="0" y="239" width="122" height="117"/>
+	<SubTexture name="slice03_03.png" x="0" y="122" width="123" height="115"/>
+	<SubTexture name="slice04_04.png" x="0" y="358" width="122" height="119"/>
+	<SubTexture name="slice05_05.png" x="243" y="0" width="112" height="124"/>
+	<SubTexture name="slice06_06.png" x="245" y="126" width="112" height="123"/>
+	<SubTexture name="slice07_07.png" x="125" y="0" width="116" height="122"/>
+	<SubTexture name="slice08_08.png" x="242" y="359" width="115" height="122"/>
+	<SubTexture name="slice09_09.png" x="0" y="0" width="123" height="120"/>
+	<SubTexture name="slice10_10.png" x="124" y="239" width="119" height="118"/>
+</TextureAtlas>
